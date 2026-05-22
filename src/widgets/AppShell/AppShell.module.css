@@ -124,7 +124,8 @@
   }
 
   .content {
-    padding-bottom: calc(var(--space-8) + 64px);
+    padding: var(--space-3);
+    padding-bottom: calc(var(--space-3) + 64px);
   }
 
   .bottomNav {

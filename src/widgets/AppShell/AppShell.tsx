@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   MonitorSmartphone,
   Package,
+  Tag,
   Warehouse,
   ReceiptText,
 } from "lucide-react";
@@ -27,6 +28,7 @@ export function AppShell({ children }: AppShellProps) {
     ? [
         { href: routes.store.pos(storeId),          label: "POS Terminal", Icon: MonitorSmartphone },
         { href: routes.store.products(storeId),      label: "Products",     Icon: Package },
+        { href: routes.store.categories(storeId),    label: "Categories",   Icon: Tag },
         { href: routes.store.inventory(storeId),     label: "Inventory",    Icon: Warehouse },
         { href: routes.store.transactions(storeId),  label: "Transactions", Icon: ReceiptText },
       ]

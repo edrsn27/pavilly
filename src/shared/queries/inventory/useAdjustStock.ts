@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createBrowserSupabaseClient } from "@/shared/utils/supabase";
 import { inventoryQueryKey } from "./useInventory";
+import { productsQueryKey } from "@/shared/queries/products";
 
 export interface AdjustStockParams {
   storeId: string;
@@ -50,6 +51,7 @@ export const useAdjustStock = () => {
     },
     onSuccess: (_, { storeId }) => {
       queryClient.invalidateQueries({ queryKey: inventoryQueryKey(storeId) });
+      queryClient.invalidateQueries({ queryKey: productsQueryKey(storeId) });
     },
   });
 };
