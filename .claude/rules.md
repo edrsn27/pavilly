@@ -5,6 +5,8 @@
 - **Always use `<Link href="...">` from `next/link`** for internal page navigation. Never use `<a href="...">` for routes — it breaks client-side navigation and triggers the `no-html-link-for-pages` lint error.
 - `<a>` is only acceptable for hash anchors (`href="#section"`) and external URLs (`href="https://..."`).
 - Pages are thin server components — no `"use client"` unless the component has state, effects, or browser APIs.
+- **`/` (home page) is SSR** — keep it a server component. No client state.
+- **`/dashboard` (all role variants) must be `"use client"`** — dashboard pages use live data polling, charts, and interactive widgets that require client-side rendering.
 
 ## Styling
 

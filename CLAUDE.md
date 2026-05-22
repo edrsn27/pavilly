@@ -4,5 +4,7 @@ Multi-vendor POS web app for a family sari sari store.
 
 @.claude/project-structure.md
 @.claude/business-flow.md
+@.claude/database.md
 @.claude/rules.md
 @.claude/accessibility.md
+@.claude/api.md
