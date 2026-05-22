@@ -23,6 +23,7 @@
 .dialog {
   width: 100%;
   max-width: 540px;
+  max-height: 90dvh;
   background: var(--color-surface);
   border-radius: var(--radius-xl, var(--radius-lg));
   box-shadow: var(--shadow-xl, var(--shadow-lg));
@@ -78,12 +79,23 @@
 }
 .closeBtn:active { transform: scale(0.95); }
 
+/* ── Form ────────────────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 /* ── Body ────────────────────────────────────────────────────────────────── */
 .body {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-5) var(--space-6);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 /* ── Error banner ────────────────────────────────────────────────────────── */

@@ -131,7 +131,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className={styles.body}>
 
             {errors.root && (
