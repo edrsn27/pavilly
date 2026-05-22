@@ -3,7 +3,7 @@
 -- ============================================================
 
 -- ── Extensions ───────────────────────────────────────────────────────────
-extension if not exists "pgcrypto";
+create extension if not exists "pgcrypto";
 
 
 -- ============================================================
@@ -383,8 +383,30 @@ create policy "products: members can read"
     )
   );
 
-create policy "products: cashier crud if permitted"
-  on public.products for insert, update, delete
+create policy "products: cashier insert if permitted"
+  on public.products for insert
+  with check (
+    exists (
+      select 1 from public.store_members
+      where store_id = products.store_id
+        and user_id = auth.uid()
+        and (permissions->>'crud_products')::boolean = true
+    )
+  );
+
+create policy "products: cashier update if permitted"
+  on public.products for update
+  using (
+    exists (
+      select 1 from public.store_members
+      where store_id = products.store_id
+        and user_id = auth.uid()
+        and (permissions->>'crud_products')::boolean = true
+    )
+  );
+
+create policy "products: cashier delete if permitted"
+  on public.products for delete
   using (
     exists (
       select 1 from public.store_members

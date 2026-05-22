@@ -16,6 +16,13 @@
 - Always include a `transform: scale(0.97)` on `:active` for tappable elements.
 - Respect `prefers-reduced-motion` — wrap animations in `@media (prefers-reduced-motion: no-preference)` or check the global reset.
 
+## Forms
+
+- **Always use `react-hook-form`** for any form with more than one field. Never manage form state with `useState`.
+- Use `mode: "onTouched"` as the default validation strategy — validates on blur, re-validates on change after first error.
+- Register rules inline via the `register` options object. No separate validation schema unless complexity warrants it.
+- API/server errors go in a separate `useState` string — do not mix them into `react-hook-form`'s error state.
+
 ## Components
 
 - Barrel exports: every directory has an `index.ts`. Import through the barrel from outside a feature; direct imports are fine within the same feature.

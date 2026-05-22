@@ -11,7 +11,7 @@ Define query options as standalone factory functions in `src/shared/queries/<dom
 ```ts
 // src/shared/queries/products/productQueryOptions.ts
 import { queryOptions } from '@tanstack/react-query'
-import { supabase } from '@/shared/lib/supabase'
+import { createBrowserSupabaseClient } from '@/shared/utils/supabase'
 
 export const productQueryOptions = (productId: string) =>
   queryOptions({
@@ -70,7 +70,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 ```ts
 // src/shared/queries/products/useUpdateProduct.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/shared/lib/supabase'
+import { createBrowserSupabaseClient } from '@/shared/utils/supabase'
 
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient()
@@ -106,11 +106,19 @@ Always use the most specific key for single-item queries and a broader parent ke
 
 ### Supabase client
 
-Use the shared Supabase client from `@/shared/lib/supabase` — never instantiate a new client inline.
+Use the factories from `@/shared/utils/supabase` — never call `createServerClient` / `createBrowserClient` directly.
 
 ```ts
-import { supabase } from '@/shared/lib/supabase'
+// inside a queryFn or client component hook
+import { createBrowserSupabaseClient } from '@/shared/utils/supabase'
+const supabase = createBrowserSupabaseClient()
+
+// inside a server component or route handler — import the file directly, NOT the barrel
+import { createClient } from '@/shared/utils/supabase/server'
+const supabase = createClient(await cookies())
 ```
+
+> The server and middleware clients use `next/headers` / `next/server`. Importing them through the barrel pulls those APIs into client bundles and causes a build error. Always import them directly from their file.
 
 ### Error handling
 

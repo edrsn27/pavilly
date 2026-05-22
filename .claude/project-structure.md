@@ -157,7 +157,6 @@ widgets/
 
 ```
 shared/
-├── api/                ← callApi, ApiError, auth helpers
 ├── atoms/              ← global state atoms (authAtom, cartAtom, ...)
 ├── components/         ← shared UI components
 │   ├── PrefetchQuery/
@@ -176,11 +175,24 @@ shared/
 │   └── vendors/
 ├── store.ts            ← global store (Jotai or Zustand)
 └── utils/              ← shared utilities
-    ├── api/            ← callApi, ApiError
     ├── currency/       ← peso formatting helpers
     ├── react-query/    ← getQueryClient, prepareQueryResult
-    └── ...
+    └── supabase/       ← Supabase client factories
+        ├── server.ts   ← createClient(cookieStore) — Server Components & Route Handlers
+        ├── client.ts   ← createClient() — Client Components & hooks
+        ├── middleware.ts ← createClient(request) — Next.js middleware
+        └── index.ts    ← barrel exports
 ```
+
+### Supabase client usage
+
+| Context | Import |
+|---------|--------|
+| Client Component / hook | `import { createBrowserSupabaseClient } from '@/shared/utils/supabase'` |
+| Server Component / Route Handler | `import { createClient } from '@/shared/utils/supabase/server'` |
+| `src/middleware.ts` | `import { createClient } from '@/shared/utils/supabase/middleware'` |
+
+The server and middleware clients import `next/headers` / `next/server`. They must be imported **directly from their file** — never through the barrel — or they will be bundled into client components and cause a build error.
 
 ---
 
