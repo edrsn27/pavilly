@@ -127,6 +127,29 @@
   color: var(--color-text-secondary);
 }
 
+/* ── Validation ─────────────────────────────────────────────────────────── */
+.inputError {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgb(220 38 38 / .1) !important;
+}
+
+.fieldError {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+  line-height: 1.4;
+}
+
+/* ── Error banner ────────────────────────────────────────────────────────── */
+.errorBanner {
+  padding: var(--space-4);
+  background: rgb(254 242 242);
+  border: 1px solid rgb(254 202 202);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: rgb(185 28 28);
+  line-height: 1.5;
+}
+
 /* ── Submit ─────────────────────────────────────────────────────────────── */
 .submitBtn {
   height: var(--tap-min);
@@ -148,6 +171,12 @@
 
 .submitBtn:active {
   transform: scale(0.98);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ── Divider ────────────────────────────────────────────────────────────── */

@@ -1,12 +1,45 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSignIn } from "@/shared/queries/auth";
 import styles from "./login.module.css";
 
-export const metadata: Metadata = {
-  title: "Sign in — Pavilly",
-};
+interface LoginFields {
+  email: string;
+  password: string;
+}
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { mutate: signIn, isPending } = useSignIn();
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFields>({ mode: "onTouched" });
+
+  const onSubmit = (data: LoginFields) => {
+    setApiError(null);
+    signIn(
+      { email: data.email.trim(), password: data.password },
+      {
+        onSuccess: ({ role }) => {
+          router.push(role === "cashier" ? "/pos" : "/dashboard");
+        },
+        onError: (err) => {
+          setApiError(
+            err instanceof Error ? err.message : "Something went wrong. Please try again."
+          );
+        },
+      }
+    );
+  };
+
   return (
     <div className={styles.card}>
 
@@ -15,24 +48,37 @@ export default function LoginPage() {
 
       <div className={styles.header}>
         <h1 className={styles.title}>Welcome back</h1>
-        <p className={styles.subtitle}>
-          Sign in to your Pavilly account to continue.
-        </p>
+        <p className={styles.subtitle}>Sign in to your Pavilly account to continue.</p>
       </div>
 
-      <form className={styles.form} action="#" method="POST">
+      {apiError && (
+        <div className={styles.errorBanner} role="alert">
+          {apiError}
+        </div>
+      )}
+
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
 
         <div className={styles.field}>
           <label htmlFor="email" className={styles.label}>Email address</label>
           <input
             id="email"
-            name="email"
             type="email"
             autoComplete="email"
-            required
             placeholder="you@example.com"
-            className={styles.input}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={`${styles.input}${errors.email ? ` ${styles.inputError}` : ""}`}
+            {...register("email", {
+              required: "Email is required.",
+              pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email address." },
+            })}
           />
+          {errors.email && (
+            <span id="email-error" className={styles.fieldError} role="alert">
+              {errors.email.message}
+            </span>
+          )}
         </div>
 
         <div className={styles.field}>
@@ -42,29 +88,28 @@ export default function LoginPage() {
           </div>
           <input
             id="password"
-            name="password"
             type="password"
             autoComplete="current-password"
-            required
             placeholder="••••••••"
-            className={styles.input}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
+            className={`${styles.input}${errors.password ? ` ${styles.inputError}` : ""}`}
+            {...register("password", { required: "Password is required." })}
           />
+          {errors.password && (
+            <span id="password-error" className={styles.fieldError} role="alert">
+              {errors.password.message}
+            </span>
+          )}
         </div>
 
-        <label className={styles.checkboxRow}>
-          <input type="checkbox" name="remember" className={styles.checkbox} />
-          <span className={styles.checkboxLabel}>Remember me for 30 days</span>
-        </label>
-
-        <button type="submit" className={styles.submitBtn}>
-          Sign in
+        <button type="submit" className={styles.submitBtn} disabled={isPending}>
+          {isPending ? "Signing in…" : "Sign in"}
         </button>
 
       </form>
 
-      <div className={styles.divider}>
-        <span>or</span>
-      </div>
+      <div className={styles.divider}><span>or</span></div>
 
       <div className={styles.roleHint}>
         <div className={styles.roleCard}>

@@ -1,7 +1,14 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
+import { createClient } from "@/shared/utils/supabase/server";
+import { AccountMenu } from "@/widgets/AccountMenu";
 import styles from "./page.module.css";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
   return (
     <div className={styles.root}>
 
@@ -13,7 +20,10 @@ export default function Home() {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
           </nav>
-          <Link href="/login" className={styles.navCta}>Get started</Link>
+          {isAuthenticated
+            ? <AccountMenu />
+            : <Link href="/login" className={styles.navCta}>Get started</Link>
+          }
         </div>
       </header>
 
