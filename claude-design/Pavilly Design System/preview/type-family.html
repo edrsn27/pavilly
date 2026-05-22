@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .card { gap: 24px; }
+  .specimen {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+  }
+  .specimen .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    white-space: nowrap;
+  }
+  .sample { color: var(--fg-1); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="specimen">
+    <div class="sample" style="font-family:var(--font-sans);font-size:64px;line-height:1;font-weight:600;letter-spacing:-0.03em;">Geist</div>
+    <div class="meta">UI · 300 / 400 / 500 / 600 / 700</div>
+  </div>
+  <div style="font-family:var(--font-sans);font-size:22px;line-height:1.4;color:var(--fg-2);max-width:560px;">
+    Fast checkout, soft edges, no fuss. The numbers always line up because they sit in a tabular monospace, while the rest of the interface stays warm and human in Geist.
+  </div>
+  <div class="specimen">
+    <div class="sample numeric" style="font-size:52px;line-height:1;font-weight:600;letter-spacing:-0.02em;">$1,248.50</div>
+    <div class="meta">Geist Mono · tabular</div>
+  </div>
+</div>
+</body>
+</html>

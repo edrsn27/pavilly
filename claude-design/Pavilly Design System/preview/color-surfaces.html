@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .pane {
+    flex: 1;
+    border-radius: 16px;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    border: 1px solid var(--border-1);
+  }
+  .pane.dark { background: #11110e; color: #f0f3f5; border-color: #1f1f1b; }
+  .pane.light { background: #fafaf7; }
+  .pane .title { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .pane.light .title { color: #5b5b54; }
+  .pane.dark .title { color: #82827a; }
+  .swatchrow { display: flex; gap: 8px; }
+  .sw {
+    flex: 1; height: 44px; border-radius: 10px;
+    display: flex; align-items: flex-end; padding: 6px 8px;
+    font-family: var(--font-mono); font-size: 10px;
+  }
+  .key { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+  .dot { width: 12px; height: 12px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="card" style="flex-direction:row;">
+  <div class="pane light">
+    <div class="title">Light surfaces</div>
+    <div class="swatchrow">
+      <div class="sw" style="background:#fafaf7;color:#5b5b54;border:1px solid #e8e8df;">bg</div>
+      <div class="sw" style="background:#ffffff;color:#5b5b54;border:1px solid #e8e8df;">surface</div>
+      <div class="sw" style="background:#f4f4ee;color:#5b5b54;">+1</div>
+      <div class="sw" style="background:#e8e8df;color:#5b5b54;">+2</div>
+    </div>
+    <div class="key"><span class="dot" style="background:#11110e;"></span> fg-1 · primary</div>
+    <div class="key"><span class="dot" style="background:#42423a;"></span> fg-2 · secondary</div>
+    <div class="key"><span class="dot" style="background:#82827a;"></span> fg-3 · tertiary</div>
+    <div class="key"><span class="dot" style="background:#35858E;"></span> accent · teal 500</div>
+  </div>
+  <div class="pane dark">
+    <div class="title">Dark surfaces</div>
+    <div class="swatchrow">
+      <div class="sw" style="background:#080806;color:#82827a;">bg</div>
+      <div class="sw" style="background:#11110e;color:#82827a;">surface</div>
+      <div class="sw" style="background:#1c1c18;color:#82827a;">+1</div>
+      <div class="sw" style="background:#2d2d27;color:#82827a;">+2</div>
+    </div>
+    <div class="key"><span class="dot" style="background:#f0f3f5;"></span> fg-1 · primary</div>
+    <div class="key"><span class="dot" style="background:#b6b6a8;"></span> fg-2 · secondary</div>
+    <div class="key"><span class="dot" style="background:#82827a;"></span> fg-3 · tertiary</div>
+    <div class="key"><span class="dot" style="background:#7eb4bc;"></span> accent · teal 300</div>
+  </div>
+</div>
+</body>
+</html>

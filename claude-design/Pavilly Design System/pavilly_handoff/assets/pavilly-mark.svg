@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  
+  <rect width="48" height="48" rx="12" fill="#35858E"></rect>
+
+  
+  <path d="M5 8 L43 8 L43 16&#xA;           Q38.25 20 33.5 16&#xA;           Q28.75 20 24 16&#xA;           Q19.25 20 14.5 16&#xA;           Q9.75 20 5 16 Z" fill="#ffffff"></path>
+
+  
+  <rect x="11.5" y="8" width="2" height="9" fill="#C2D099"></rect>
+  <rect x="22.75" y="8" width="2.5" height="9" fill="#7DA78C"></rect>
+  <rect x="34" y="8" width="2" height="9" fill="#C2D099"></rect>
+
+  
+  <text x="24" y="37" font-family="Geist, system-ui, sans-serif" font-size="17" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-1">PV</text>
+
+  
+  <rect x="8" y="40.5" width="32" height="2" rx="1" fill="#C2D099"></rect>
+</svg>

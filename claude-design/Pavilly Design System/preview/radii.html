@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .row2 { display: flex; gap: 14px; align-items: flex-end; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .box { background: var(--pavilly-teal-100); border: 1px solid var(--pavilly-teal-300); width: 72px; height: 72px; }
+  .tok { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); }
+  .name { font-size: 12px; font-weight: 600; color: var(--fg-1); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row2">
+    <div class="item"><div class="box" style="border-radius:4px;"></div><div class="name">xs</div><div class="tok">4px</div></div>
+    <div class="item"><div class="box" style="border-radius:8px;"></div><div class="name">sm</div><div class="tok">8px</div></div>
+    <div class="item"><div class="box" style="border-radius:12px;"></div><div class="name">md</div><div class="tok">12px</div></div>
+    <div class="item"><div class="box" style="border-radius:16px;"></div><div class="name">lg</div><div class="tok">16px</div></div>
+    <div class="item"><div class="box" style="border-radius:20px;"></div><div class="name">xl</div><div class="tok">20px</div></div>
+    <div class="item"><div class="box" style="border-radius:28px;"></div><div class="name">2xl</div><div class="tok">28px</div></div>
+    <div class="item"><div class="box" style="border-radius:9999px;"></div><div class="name">full</div><div class="tok">∞</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--fg-2);line-height:1.5;border-top:1px solid var(--border-1);padding-top:14px;">
+    <strong style="color:var(--fg-1);">Defaults:</strong> inputs use <code style="background:var(--surface-2);padding:1px 6px;border-radius:4px;">sm</code>, buttons + list rows <code style="background:var(--surface-2);padding:1px 6px;border-radius:4px;">md</code>, cards <code style="background:var(--surface-2);padding:1px 6px;border-radius:4px;">lg</code>, sheets/modals <code style="background:var(--surface-2);padding:1px 6px;border-radius:4px;">xl</code>, POS product tiles <code style="background:var(--surface-2);padding:1px 6px;border-radius:4px;">2xl</code>.
+  </div>
+</div>
+</body>
+</html>

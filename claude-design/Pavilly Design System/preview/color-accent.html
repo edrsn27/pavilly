@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .ramp { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
+  .swatch {
+    aspect-ratio: 1 / 1.15;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8px;
+    color: rgba(255,255,255,0.95);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.2;
+  }
+  .swatch.light { color: rgba(30, 44, 36, 0.75); }
+  .swatch .step { font-weight: 600; font-size: 11px; }
+  .swatch .hex { opacity: 0.8; font-size: 9.5px; }
+  .row6 { display: flex; gap: 14px; align-items: stretch; }
+  .pin {
+    background: #7DA78C;
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 18px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .pin.olive { background: #C2D099; color: #1c4347; }
+  .pin.cream { background: #E6EEC9; color: #1c4347; }
+  .pin .lbl { font-size: 11px; opacity: 0.8; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+  .pin .name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .pin .hex { font-family: var(--font-mono); font-size: 12px; opacity: 0.8; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row6">
+    <div class="pin">
+      <div class="lbl">Sage · accent</div>
+      <div class="name">7DA78C</div>
+      <div class="hex">success · soft fills</div>
+    </div>
+    <div class="pin olive">
+      <div class="lbl">Olive</div>
+      <div class="name">C2D099</div>
+      <div class="hex">highlights · pills</div>
+    </div>
+    <div class="pin cream">
+      <div class="lbl">Cream</div>
+      <div class="name">E6EEC9</div>
+      <div class="hex">soft surface</div>
+    </div>
+  </div>
+  <div class="ramp">
+    <div class="swatch light" style="background:#f1f5f2;"><div class="step">50</div><div class="hex">F1F5F2</div></div>
+    <div class="swatch light" style="background:#dde7e0;"><div class="step">100</div><div class="hex">DDE7E0</div></div>
+    <div class="swatch light" style="background:#bccfc2;"><div class="step">200</div><div class="hex">BCCFC2</div></div>
+    <div class="swatch light" style="background:#9bb8a4;"><div class="step">300</div><div class="hex">9BB8A4</div></div>
+    <div class="swatch" style="background:#7DA78C;"><div class="step">400</div><div class="hex">7DA78C</div></div>
+    <div class="swatch" style="background:#618a72;"><div class="step">500</div><div class="hex">618A72</div></div>
+    <div class="swatch" style="background:#4e6e5b;"><div class="step">600</div><div class="hex">4E6E5B</div></div>
+    <div class="swatch" style="background:#3e5749;"><div class="step">700</div><div class="hex">3E5749</div></div>
+    <div class="swatch" style="background:#2f4338;"><div class="step">800</div><div class="hex">2F4338</div></div>
+  </div>
+</div>
+</body>
+</html>
