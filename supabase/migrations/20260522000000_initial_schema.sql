@@ -2,6 +2,12 @@
 -- Pavilly — Initial Schema
 -- ============================================================
 
+-- ── Reset (DEV ONLY — remove before production) ───────────────────────────
+drop schema public cascade;
+create schema public;
+grant usage on schema public to anon, authenticated, service_role;
+grant all on schema public to postgres;
+
 -- ── Extensions ───────────────────────────────────────────────────────────
 create extension if not exists "pgcrypto";
 
@@ -15,8 +21,8 @@ create table public.users (
   id          uuid        primary key references auth.users(id) on delete cascade,
   email       text        not null unique,
   full_name   text        not null default '',
-  role        text        not null default 'vendor'
-                          check (role in ('admin', 'vendor', 'cashier')),
+  role        text        not null default 'user'
+                          check (role in ('admin', 'user')),
   avatar_url  text,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
@@ -39,6 +45,8 @@ create table public.store_members (
   id          uuid        primary key default gen_random_uuid(),
   store_id    uuid        not null references public.stores(id) on delete cascade,
   user_id     uuid        not null references public.users(id) on delete cascade,
+  member_role text        not null default 'cashier'
+                          check (member_role in ('cashier', 'manager')),
   permissions jsonb       not null default '{
     "crud_products":     false,
     "view_inventory":    false,
@@ -165,6 +173,48 @@ create table public.invites (
   expires_at  timestamptz not null default (now() + interval '7 days'),
   created_at  timestamptz not null default now()
 );
+
+
+-- ============================================================
+-- TABLE PRIVILEGES
+-- ============================================================
+-- RLS handles row-level filtering; these grants give the roles
+-- base access so queries aren't rejected before RLS even runs.
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on public.invites to anon;
+
+
+-- ============================================================
+-- RLS HELPER FUNCTIONS (security definer — bypass RLS for cross-table checks)
+-- ============================================================
+-- Without these, stores policy queries store_members, which queries stores → infinite loop.
+
+create or replace function public.is_store_owner(p_store_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.stores
+    where id = p_store_id and owner_id = auth.uid()
+  );
+$$;
+
+create or replace function public.is_store_member(p_store_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.store_members
+    where store_id = p_store_id and user_id = auth.uid()
+  );
+$$;
 
 
 -- ============================================================
@@ -321,23 +371,13 @@ create policy "stores: owner full access"
 
 create policy "stores: members can read"
   on public.stores for select
-  using (
-    exists (
-      select 1 from public.store_members
-      where store_id = stores.id and user_id = auth.uid()
-    )
-  );
+  using (public.is_store_member(id));
 
 
 -- ── store_members ─────────────────────────────────────────────────────────
 create policy "store_members: owner manages"
   on public.store_members for all
-  using (
-    exists (
-      select 1 from public.stores
-      where id = store_members.store_id and owner_id = auth.uid()
-    )
-  );
+  using (public.is_store_owner(store_id));
 
 create policy "store_members: cashier reads own row"
   on public.store_members for select
@@ -347,41 +387,21 @@ create policy "store_members: cashier reads own row"
 -- ── categories ───────────────────────────────────────────────────────────
 create policy "categories: owner full access"
   on public.categories for all
-  using (
-    exists (
-      select 1 from public.stores
-      where id = categories.store_id and owner_id = auth.uid()
-    )
-  );
+  using (public.is_store_owner(store_id));
 
 create policy "categories: members can read"
   on public.categories for select
-  using (
-    exists (
-      select 1 from public.store_members
-      where store_id = categories.store_id and user_id = auth.uid()
-    )
-  );
+  using (public.is_store_member(store_id));
 
 
 -- ── products ─────────────────────────────────────────────────────────────
 create policy "products: owner full access"
   on public.products for all
-  using (
-    exists (
-      select 1 from public.stores
-      where id = products.store_id and owner_id = auth.uid()
-    )
-  );
+  using (public.is_store_owner(store_id));
 
 create policy "products: members can read"
   on public.products for select
-  using (
-    exists (
-      select 1 from public.store_members
-      where store_id = products.store_id and user_id = auth.uid()
-    )
-  );
+  using (public.is_store_member(store_id));
 
 create policy "products: cashier insert if permitted"
   on public.products for insert
@@ -454,21 +474,13 @@ create policy "inventory: cashier manage if permitted"
 -- ── transactions ──────────────────────────────────────────────────────────
 create policy "transactions: owner full access"
   on public.transactions for all
-  using (
-    exists (
-      select 1 from public.stores
-      where id = transactions.store_id and owner_id = auth.uid()
-    )
-  );
+  using (public.is_store_owner(store_id));
 
 create policy "transactions: cashier insert"
   on public.transactions for insert
   with check (
     auth.uid() = cashier_id
-    and exists (
-      select 1 from public.store_members
-      where store_id = transactions.store_id and user_id = auth.uid()
-    )
+    and public.is_store_member(store_id)
   );
 
 create policy "transactions: cashier read own"
@@ -524,21 +536,11 @@ create policy "invites: anyone can read by token"
 -- ── gcash_accounts ────────────────────────────────────────────────────────
 create policy "gcash_accounts: owner full access"
   on public.gcash_accounts for all
-  using (
-    exists (
-      select 1 from public.stores
-      where id = gcash_accounts.store_id and owner_id = auth.uid()
-    )
-  );
+  using (public.is_store_owner(store_id));
 
 create policy "gcash_accounts: members can read"
   on public.gcash_accounts for select
-  using (
-    exists (
-      select 1 from public.store_members
-      where store_id = gcash_accounts.store_id and user_id = auth.uid()
-    )
-  );
+  using (public.is_store_member(store_id));
 
 
 -- ── gcash_transaction_details ─────────────────────────────────────────────

@@ -122,7 +122,26 @@ const supabase = createClient(await cookies())
 
 ### Error handling
 
-Supabase errors are thrown directly inside `queryFn` — TanStack Query surfaces them via `error` on the hook. Display errors with the shared `ErrorMessage` component; do not `try/catch` inside components.
+**Always set `retry: false` on every `useQuery` hook.** TanStack Query retries failed queries 3 times by default. Supabase returns 403 for RLS-blocked rows (e.g. a new user with no store), which is expected — not a transient error. Without `retry: false`, one expected 403 turns into 4 network requests.
+
+Return a safe empty value instead of throwing for Supabase errors in `queryFn`. RLS errors and "no rows" are expected states, not exceptions:
+
+```ts
+// ✅ Correct — safe fallback, no retries
+const { data, error } = await supabase.from("stores")...maybeSingle();
+if (error) return null;   // new user has no store → null is the correct state
+return data;
+
+// ✅ For list queries
+const { data, error } = await supabase.from("transactions")...;
+if (error) return [];
+return data ?? [];
+
+// ❌ Wrong — throws on every RLS 403, triggers 3 retries
+if (error) throw error;
+```
+
+Only throw inside `queryFn` when the error is truly unexpected and you want it surfaced in the `error` field of the hook.
 
 ### Stale time defaults
 

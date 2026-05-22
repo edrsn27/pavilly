@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser, useSignOut } from "@/shared/queries/auth";
+import { routes } from "@/navigation/routes";
 import styles from "./AccountMenu.module.css";
 
 function getInitials(fullName: string | undefined, email: string | undefined): string {
@@ -49,7 +50,7 @@ export function AccountMenu() {
 
   const handleSignOut = () => {
     signOut(undefined, {
-      onSuccess: () => router.push("/login"),
+      onSuccess: () => router.push(routes.auth.login),
     });
   };
 

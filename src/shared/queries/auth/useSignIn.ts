@@ -7,7 +7,12 @@ interface SignInParams {
 }
 
 export interface SignInResult {
-  role: "admin" | "vendor" | "cashier";
+  /** System-level role — only 'admin' is elevated; everyone else is 'user'. */
+  role: "admin" | "user";
+  /** true if the user owns at least one store */
+  hasStore: boolean;
+  /** true if the user is a member of a store but does not own one */
+  isMemberOnly: boolean;
 }
 
 export const useSignIn = () =>
@@ -18,14 +23,27 @@ export const useSignIn = () =>
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
+      const userId = data.user.id;
+
+      const [
+        { data: profile, error: profileError },
+        { count: storeCount },
+        { count: memberCount },
+      ] = await Promise.all([
+        supabase.from("users").select("role").eq("id", userId).single(),
+        supabase.from("stores").select("*", { count: "exact", head: true }).eq("owner_id", userId),
+        supabase.from("store_members").select("*", { count: "exact", head: true }).eq("user_id", userId),
+      ]);
 
       if (profileError) throw profileError;
 
-      return { role: profile.role as SignInResult["role"] };
+      const hasStore = (storeCount ?? 0) > 0;
+      const isMemberOnly = !hasStore && (memberCount ?? 0) > 0;
+
+      return {
+        role: profile.role as SignInResult["role"],
+        hasStore,
+        isMemberOnly,
+      };
     },
   });

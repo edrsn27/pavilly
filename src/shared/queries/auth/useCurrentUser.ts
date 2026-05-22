@@ -9,8 +9,9 @@ export const useCurrentUser = () =>
     queryFn: async () => {
       const supabase = createBrowserSupabaseClient();
       const { data, error } = await supabase.auth.getUser();
-      if (error) throw error;
+      if (error) return null;
       return data.user;
     },
     staleTime: Infinity,
+    retry: false,
   });

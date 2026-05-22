@@ -14,7 +14,7 @@ Mirrors `auth.users`. Created automatically via trigger on signup. Default role 
 | `id` | `uuid` | PK, references `auth.users(id)` |
 | `email` | `text` | unique |
 | `full_name` | `text` | |
-| `role` | `text` | `'admin' \| 'vendor' \| 'cashier'` — default `'vendor'` |
+| `role` | `text` | `'admin' \| 'user'` — default `'user'` |
 | `avatar_url` | `text` | nullable |
 | `created_at` | `timestamptz` | default `now()` |
 | `updated_at` | `timestamptz` | default `now()` |
@@ -45,6 +45,7 @@ Links cashiers to a store. Holds per-cashier configurable permissions as jsonb.
 | `id` | `uuid` | PK |
 | `store_id` | `uuid` | references `stores(id)` |
 | `user_id` | `uuid` | references `users(id)` |
+| `member_role` | `text` | `'cashier' \| 'manager'` — default `'cashier'` |
 | `permissions` | `jsonb` | default `{}` |
 | `created_at` | `timestamptz` | |
 

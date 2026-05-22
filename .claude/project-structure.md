@@ -28,52 +28,73 @@ src/
 
 ```
 app/
-├── layout.tsx              ← root layout (fonts, global CSS, providers)
-├── providers.tsx           ← QueryClient, state, theme
-├── (auth)/                 ← unauthenticated pages
-│   └── login/
-│       └── page.tsx
-├── (admin)/                ← admin-only pages (store owner / manager)
-│   ├── layout.tsx          ← admin auth gate + AppShell (Sidebar + Header)
-│   ├── dashboard/
-│   │   └── page.tsx
-│   ├── vendors/
-│   │   ├── page.tsx        ← vendor list
-│   │   └── [id]/
-│   │       └── page.tsx    ← vendor detail / edit
-│   ├── products/
-│   │   └── page.tsx        ← all products across vendors
-│   ├── transactions/
-│   │   └── page.tsx        ← full transaction history
-│   └── reports/
-│       └── page.tsx
-├── (vendor)/               ← vendor-specific pages
-│   ├── layout.tsx          ← vendor auth gate + AppShell (Sidebar + Header)
-│   ├── dashboard/
-│   │   └── page.tsx
-│   ├── products/
-│   │   ├── page.tsx
-│   │   └── [id]/
-│   │       └── page.tsx
-│   ├── inventory/
-│   │   └── page.tsx
-│   └── transactions/
-│       └── page.tsx
-└── (pos)/                  ← POS terminal (vendor + cashier)
-    ├── layout.tsx          ← fullscreen POS layout, auth gate
-    └── page.tsx            ← POS terminal
+├── layout.tsx                    ← root layout (fonts, global CSS, providers)
+├── providers.tsx                 ← QueryClient, state, theme
+├── page.tsx                      ← landing page (SSR, public)
+│
+├── (auth)/                       ← unauthenticated pages only
+│   ├── layout.tsx                ← split-panel auth layout
+│   ├── login/page.tsx
+│   └── signup/page.tsx
+│
+├── dashboard/                    ← authenticated landing — everyone
+│   └── page.tsx                  ← shows owned stores + memberships; "create store" if none
+│
+├── store/
+│   ├── new/
+│   │   └── page.tsx              ← create a new store
+│   └── [id]/                     ← store-scoped pages (owner or member with access)
+│       ├── layout.tsx            ← store auth gate + AppShell with store context
+│       ├── pointofsale/
+│       │   └── page.tsx          ← POS terminal (fullscreen, owner + members)
+│       ├── products/
+│       │   ├── page.tsx          ← product list + search
+│       │   └── [productId]/
+│       │       └── page.tsx      ← product detail / edit
+│       ├── inventory/
+│       │   └── page.tsx          ← stock levels + low-stock alerts
+│       ├── transactions/
+│       │   ├── page.tsx          ← transaction history
+│       │   └── [txId]/
+│       │       └── page.tsx      ← transaction detail / receipt
+│       └── reports/
+│           └── page.tsx          ← sales + inventory reports
+│
+└── admin/                        ← admin-only (users.role = 'admin')
+    ├── layout.tsx                ← admin auth gate + AppShell
+    ├── dashboard/page.tsx        ← platform overview
+    ├── stores/
+    │   ├── page.tsx              ← all stores
+    │   └── [id]/page.tsx         ← store detail
+    └── users/
+        └── page.tsx              ← all users
 ```
 
-Pages are **thin server components** — prefetch data, then delegate to a Screen.
+### Route access rules
+
+| Route | Who can access |
+|-------|---------------|
+| `/dashboard` | Any authenticated user |
+| `/store/new` | Any authenticated user |
+| `/store/[id]/pointofsale` | Store owner + store members |
+| `/store/[id]/products` | Store owner + members with `crud_products` or read |
+| `/store/[id]/inventory` | Store owner + members with `view_inventory` |
+| `/store/[id]/transactions` | Store owner + members with `view_transactions` |
+| `/store/[id]/reports` | Store owner + members with `view_reports` |
+| `/admin/*` | `users.role = 'admin'` only |
+
+Access is enforced in `store/[id]/layout.tsx` by checking `stores.owner_id` and `store_members`.
+
+### Page pattern (thin server component)
 
 ```tsx
-// app/(admin)/vendors/[id]/page.tsx
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params
+// app/store/[id]/products/[productId]/page.tsx
+const Page = async ({ params }: { params: Promise<{ id: string; productId: string }> }) => {
+  const { id, productId } = await params
   return (
-    <PrefetchQuery options={[vendorQueryOptions(id)]}>
-      <VendorDetailScreen />
-    </PrefetchQuery>
+    <HydrationBoundary state={dehydrate(getQueryClient())}>
+      <ProductDetailScreen storeId={id} productId={productId} />
+    </HydrationBoundary>
   )
 }
 ```
@@ -86,15 +107,15 @@ Each feature is self-contained. Features do not import from other features.
 
 ```
 features/
-├── auth/               ← LoginForm, session management, role guards
-├── dashboard/          ← Summary cards, revenue, quick stats
+├── auth/               ← LoginForm, session management
+├── dashboard/          ← Store cards, "create store" CTA
 ├── inventory/          ← Stock levels, low-stock alerts, restock
 ├── notifications/      ← Toast notifications
 ├── pos/                ← POS terminal: product grid, cart, checkout, payment
 ├── products/           ← Product catalog: add, edit, search, categories
 ├── reports/            ← Sales and inventory reports, charts
-├── transactions/       ← Transaction list, receipt detail, refunds
-└── vendors/            ← Vendor registration, profiles, stall management
+├── store/              ← Store creation, settings, member management
+└── transactions/       ← Transaction list, receipt detail, refunds
 ```
 
 ### Feature internal structure
@@ -142,14 +163,17 @@ UI blocks that appear on multiple pages with no feature dependency. Navigation c
 
 ```
 widgets/
-├── AppShell/           ← root layout wrapper (composes Sidebar + Header)
-├── Header/             ← top bar (user menu, store name, notifications bell)
-├── Sidebar/            ← side navigation (role-aware links)
-├── Footer/             ← bottom bar (used in POS / auth layouts)
+├── AppShell/           ← layout wrapper: sidebar + header (store-context-aware)
+├── AccountMenu/        ← avatar button + sign-out popup
+├── Header/             ← top bar (AccountMenu, store name)
+├── Sidebar/            ← side nav — links built from current store ID via useParams()
+├── Footer/             ← bottom bar (POS / auth layouts)
 ├── RevenueChart/       ← revenue over time chart
 ├── StockAlertBadge/    ← low-stock indicator
 └── SummaryCard/        ← stat card (total sales, orders, etc.)
 ```
+
+> **AppShell sidebar links** are store-scoped. The sidebar reads `storeId` from `useParams()` and builds links as `/store/${storeId}/products`, `/store/${storeId}/inventory`, etc. Never hardcode store IDs.
 
 ---
 
@@ -283,15 +307,19 @@ Within the same feature, direct imports are fine.
 
 ---
 
-## User roles
+## User roles & access model
 
-| Role | How they join | Access |
-|------|--------------|--------|
-| `admin` | System-level | All pages: vendor management, all products, all transactions, reports |
-| `vendor` | Self-registration (default role on signup) | Own products, inventory, transactions + POS terminal. Can invite cashiers. |
-| `cashier` | Invited by a vendor | POS terminal only |
+`users.role` is system-level only: `admin | user`.  
+Store-level access comes from `stores.owner_id` and `store_members`.
 
-Route groups map directly to roles. `RoleGuard` in `shared/components/` wraps route group layouts to enforce access.
+| Who | How | Access |
+|-----|-----|--------|
+| `admin` | System-level | `/admin/*` + all store pages |
+| Store owner | Created a store (`stores.owner_id`) | `/dashboard` + all `/store/[id]/*` for their store |
+| Store member (cashier/manager) | Added via invite to `store_members` | `/store/[id]/pointofsale` + pages their permissions allow |
+| New user | Just registered, no store yet | `/dashboard` (sees "Create store" prompt) |
+
+Access is enforced per-route in `src/app/store/[id]/layout.tsx` and `src/app/admin/layout.tsx`.
 
 ---
 
@@ -299,8 +327,10 @@ Route groups map directly to roles. `RoleGuard` in `shared/components/` wraps ro
 
 | What you're building | Where it goes |
 |----------------------|---------------|
-| New page | `src/app/(admin\|vendor\|pos\|auth)/your-page/page.tsx` |
-| New data query / hook | `src/shared/queries/<domain>/useHookName/` |
+| Store-scoped page | `src/app/store/[id]/<section>/page.tsx` |
+| Auth page | `src/app/(auth)/<page>/page.tsx` |
+| Admin page | `src/app/admin/<section>/page.tsx` |
+| New data query / hook | `src/shared/queries/<domain>/useHookName.ts` |
 | Reusable component (cross-feature) | `src/shared/components/MyComponent/` |
 | Feature-specific component | `src/features/<feature>/components/` |
 | Page assembly (multiple features) | `src/screens/MyScreen/` |
@@ -310,11 +340,12 @@ Route groups map directly to roles. `RoleGuard` in `shared/components/` wraps ro
 
 ---
 
-## Checklist when adding a new feature
+## Checklist when adding a new store-scoped feature
 
 - [ ] Create `src/features/<feature-name>/` with `index.ts`
 - [ ] Add queries in `src/shared/queries/<domain>/`
 - [ ] Add domain types in `src/interfaces/`
-- [ ] Create page in `src/app/(admin|vendor|pos|auth)/`
+- [ ] Create page at `src/app/store/[id]/<section>/page.tsx`
 - [ ] Add route constant to `src/navigation/navigation.routes.ts`
-- [ ] Wire `PrefetchQuery` in the page server component
+- [ ] Wire `HydrationBoundary` + `prefetchQuery` in the page server component
+- [ ] Add nav item to `AppShell` sidebar if it needs a top-level link

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSignUp } from "@/shared/queries/auth";
+import { routes } from "@/navigation/routes";
 import styles from "./signup.module.css";
 
 interface SignUpFields {
@@ -43,7 +44,7 @@ export default function SignupPage() {
           if (requiresEmailConfirmation) {
             setEmailSent(true);
           } else {
-            router.push("/dashboard");
+            router.push(routes.dashboard);
           }
         },
         onError: (err) => {
@@ -229,7 +230,7 @@ export default function SignupPage() {
 
           <p className={styles.footer}>
             Already have an account?{" "}
-            <Link href="/login" className={styles.footerLink}>Sign in</Link>
+            <Link href={routes.auth.login} className={styles.footerLink}>Sign in</Link>
           </p>
         </>
       )}

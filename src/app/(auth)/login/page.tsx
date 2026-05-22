@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@/shared/queries/auth";
+import { routes } from "@/navigation/routes";
 import styles from "./login.module.css";
 
 interface LoginFields {
@@ -28,8 +29,8 @@ export default function LoginPage() {
     signIn(
       { email: data.email.trim(), password: data.password },
       {
-        onSuccess: ({ role }) => {
-          router.push(role === "cashier" ? "/pos" : "/dashboard");
+        onSuccess: ({ isMemberOnly }) => {
+          router.push(routes.dashboard);
         },
         onError: (err) => {
           setApiError(
@@ -128,7 +129,7 @@ export default function LoginPage() {
 
       <p className={styles.footer}>
         New to Pavilly?{" "}
-        <Link href="/signup" className={styles.footerLink}>Create an account</Link>
+        <Link href={routes.auth.signup} className={styles.footerLink}>Create an account</Link>
       </p>
 
     </div>

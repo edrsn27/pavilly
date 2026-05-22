@@ -8,7 +8,8 @@
       "Bash(git *)",
       "WebFetch(domain:localhost)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "Bash(mv \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\pointofsale\" \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\point-of-sale\")"
     ]
   }
 }
