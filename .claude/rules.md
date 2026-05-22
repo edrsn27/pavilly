@@ -28,11 +28,17 @@
 - **Always use `@tanstack/react-table` (v8)** for data tables. Never hand-roll `<table>` markup with manual sort/filter state.
 - Define columns with `createColumnHelper` and `useMemo` inside the component when cell renderers close over component state (e.g. `setAdjustingItem`); define them outside when they are pure.
 - Use `getSortedRowModel()` for sortable columns. Apply pre-filtering to the `data` array (tab filters, search) before passing to `useReactTable` — don't use TanStack's `getFilteredRowModel` for simple UI filters.
-- Pin the primary identifier column to the left and the actions column to the right using a stable `ColumnPinningState` constant (no setter needed). Apply `position: sticky` via a `pinStyle(column)` helper that calls `column.getStart("left")` / `column.getAfter("right")`. Always give pinned `th`/`td` an explicit `background` so content doesn't bleed through on horizontal scroll.
+- Pin the primary identifier column to the left using a stable `ColumnPinningState` constant (no setter needed). Apply `position: sticky` via a `pinStyle(column)` helper that calls `column.getStart("left")` / `column.getAfter("right")`. Always give pinned `th`/`td` an explicit `background` so content doesn't bleed through on horizontal scroll.
 - Mark right-aligned numeric columns with a `RIGHT_COLS` set checked at render time; don't add alignment to column meta or `columnDef`.
+- **Always set `size` on every column definition** and apply `style={{ width: column.getSize() }}` on every `th` and `td`. Use `table-layout: fixed` on the table. Set `min-width` on the table to the sum of all column sizes. Without this, the first column expands to fill all visible space on mobile.
+
+## Modals
+
+- Scrollable modal body pattern — the flex chain must be unbroken from the dialog down: `dialog (flex column, max-height: 90dvh)` → `form (flex column, flex: 1, min-height: 0)` → `body (flex: 1, min-height: 0, overflow-y: auto)`. Header and footer get `flex-shrink: 0`. Without `min-height: 0` on each flex ancestor, `overflow-y: auto` never activates.
 
 ## Components
 
 - Barrel exports: every directory has an `index.ts`. Import through the barrel from outside a feature; direct imports are fine within the same feature.
 - Navigation chrome (Header, Sidebar, Footer, AppShell) lives in `src/widgets/`, not `src/features/`.
 - Numeric values (prices, quantities, totals) use `font-family: var(--font-numeric)` and `font-variant-numeric: tabular-nums`.
+- **`TextTruncate`** (`src/shared/components/TextTruncate`) — use for any text that should truncate with ellipsis and show a tooltip on overflow. Pass `className` to the wrapper to set `max-width`, `font-weight`, `color` (all inherited). The component only shows the tooltip when the text is actually overflowing (checks `scrollWidth > offsetWidth` on hover — no re-render).
