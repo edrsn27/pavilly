@@ -1,0 +1,54 @@
+.terminal {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.productPane {
+  padding: var(--space-4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar {
+  display: none;
+}
+
+.sidebarOpen {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+}
+
+
+@media (min-width: 768px) {
+  .terminal {
+    grid-template-columns: 1fr 360px;
+    grid-template-rows: 1fr;
+  }
+
+  .productPane {
+    padding: var(--space-5);
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+.sidebarOpen {
+    position: static;
+    inset: unset;
+    z-index: auto;
+    background: none;
+  }
+}

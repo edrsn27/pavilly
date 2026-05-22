@@ -1,3 +1,9 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { PosTerminal } from "@/features/pos";
+
 export default function PosPage() {
-  return <div>POS Terminal — coming soon</div>;
+  const params = useParams<{ id: string }>();
+  return <PosTerminal storeId={params.id} />;
 }

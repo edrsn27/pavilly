@@ -10,7 +10,8 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "Bash(mv \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\pointofsale\" \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\point-of-sale\")",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/@tanstack/react-table/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@tanstack/react-table/package.json'\\).version\\)\")",
+      "Bash(xargs grep -l \"transactions.*insert\\\\|useMutation.*transaction\")"
     ]
   }
 }
