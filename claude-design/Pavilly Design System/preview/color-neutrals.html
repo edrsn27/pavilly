@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .ramp { display: grid; grid-template-columns: repeat(13, 1fr); gap: 5px; }
+  .swatch {
+    aspect-ratio: 1 / 1.2;
+    border-radius: 8px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 6px;
+    color: rgba(255,255,255,0.95);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1.2;
+  }
+  .swatch.light { color: rgba(17, 21, 26, 0.8); }
+  .swatch .step { font-weight: 600; font-size: 10px; }
+  .swatch .hex { opacity: 0.75; font-size: 8.5px; }
+  .label-row { display: flex; justify-content: space-between; align-items: baseline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label-row">
+    <div>
+      <div style="font-size:11px;color:var(--fg-3);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">Neutrals · Ink</div>
+      <div style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;">Warm-stone grayscale</div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--fg-3);">13 steps · 0 → 950</div>
+  </div>
+  <div class="ramp">
+    <div class="swatch light" style="background:#ffffff;border:1px solid var(--border-1);"><div class="step">0</div><div class="hex">FFF</div></div>
+    <div class="swatch light" style="background:#fafaf7;"><div class="step">25</div><div class="hex">FAFAF7</div></div>
+    <div class="swatch light" style="background:#f4f4ee;"><div class="step">50</div><div class="hex">F4F4EE</div></div>
+    <div class="swatch light" style="background:#e8e8df;"><div class="step">100</div><div class="hex">E8E8DF</div></div>
+    <div class="swatch light" style="background:#d3d3c7;"><div class="step">200</div><div class="hex">D3D3C7</div></div>
+    <div class="swatch light" style="background:#aeaea0;"><div class="step">300</div><div class="hex">AEAEA0</div></div>
+    <div class="swatch light" style="background:#82827a;"><div class="step">400</div><div class="hex">82827A</div></div>
+    <div class="swatch" style="background:#5b5b54;"><div class="step">500</div><div class="hex">5B5B54</div></div>
+    <div class="swatch" style="background:#42423a;"><div class="step">600</div><div class="hex">42423A</div></div>
+    <div class="swatch" style="background:#2d2d27;"><div class="step">700</div><div class="hex">2D2D27</div></div>
+    <div class="swatch" style="background:#1c1c18;"><div class="step">800</div><div class="hex">1C1C18</div></div>
+    <div class="swatch" style="background:#11110e;"><div class="step">900</div><div class="hex">11110E</div></div>
+    <div class="swatch" style="background:#080806;"><div class="step">950</div><div class="hex">080806</div></div>
+  </div>
+</div>
+</body>
+</html>

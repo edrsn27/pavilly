@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 80ms var(--ease-out), background 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+    user-select: none;
+  }
+  .btn:active { transform: translateY(1px) scale(0.99); }
+  .btn.size-md { height: 44px; padding: 0 18px; font-size: 14px; }
+  .btn.size-lg { height: 52px; padding: 0 22px; font-size: 16px; }
+  .btn.size-pos { height: 56px; padding: 0 24px; font-size: 16px; border-radius: 14px; }
+
+  .btn.primary { background: #35858E; color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 1px 2px rgba(17,17,14,0.06); }
+  .btn.primary:hover { background: #2b6c73; }
+  .btn.secondary { background: #fff; color: #11110e; border-color: #d3d3c7; box-shadow: 0 1px 2px rgba(17,17,14,0.04); }
+  .btn.secondary:hover { background: #f4f4ee; }
+  .btn.ghost { background: transparent; color: #2d2d27; }
+  .btn.ghost:hover { background: #f4f4ee; }
+  .btn.danger { background: #b85050; color: #fff; }
+  .btn.danger:hover { background: #9a3a3a; }
+  .btn.disabled { background: #e8e8df; color: #aeaea0; cursor: not-allowed; }
+
+  .ico { width: 16px; height: 16px; }
+  .ico-lg { width: 18px; height: 18px; }
+  .label-mini { font-size: 11px; color: var(--fg-3); font-family: var(--font-mono); margin-right: 6px; min-width: 90px; }
+  .group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="group">
+    <div class="label-mini">primary</div>
+    <button class="btn primary size-md">Charge $48.20</button>
+    <button class="btn primary size-md">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Continue
+    </button>
+    <button class="btn primary size-md disabled" disabled>Charge</button>
+  </div>
+  <div class="group">
+    <div class="label-mini">secondary</div>
+    <button class="btn secondary size-md">Save draft</button>
+    <button class="btn secondary size-md">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Export CSV
+    </button>
+    <button class="btn ghost size-md">Cancel</button>
+    <button class="btn danger size-md">Void order</button>
+  </div>
+  <div class="group">
+    <div class="label-mini">pos · 56px</div>
+    <button class="btn primary size-pos">Pay with card</button>
+    <button class="btn secondary size-pos">Cash</button>
+  </div>
+</div>
+</body>
+</html>

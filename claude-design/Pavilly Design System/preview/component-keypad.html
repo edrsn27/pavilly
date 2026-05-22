@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .keypad {
+    background: #11110e;
+    border-radius: 20px;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 14px;
+    width: 320px;
+  }
+  .display {
+    color: #fff;
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 44px; font-weight: 600;
+    text-align: right; padding: 8px 12px;
+    letter-spacing: -0.02em;
+  }
+  .display .cents { font-size: 24px; opacity: 0.6; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .key {
+    height: 56px; border-radius: 14px;
+    background: #1c1c18;
+    color: #fff;
+    font-family: var(--font-sans); font-size: 22px; font-weight: 500;
+    border: none; cursor: pointer;
+  }
+  .key:hover { background: #2d2d27; }
+  .key:active { transform: scale(0.97); }
+  .key.accent { background: #35858E; }
+  .key.accent:hover { background: #2b6c73; }
+
+  .sidetext { padding: 8px 0; }
+  .sidetext h3 { font-size: 18px; font-weight: 600; margin: 0 0 8px; }
+  .sidetext p { font-size: 13px; color: var(--fg-2); line-height: 1.5; margin: 0 0 6px; }
+  .sidetext li { font-size: 12.5px; color: var(--fg-2); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="card" style="flex-direction:row;align-items:center;gap:24px;">
+  <div class="keypad">
+    <div class="display">$48<span class="cents">.20</span></div>
+    <div class="grid">
+      <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+      <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+      <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+      <button class="key">.</button><button class="key">0</button><button class="key accent">⌫</button>
+    </div>
+  </div>
+  <div class="sidetext" style="flex:1;">
+    <h3>Cash / numeric keypad</h3>
+    <p>Big, square keys (56px) — works for adults, doesn't punish rushing. Backspace lives in the accent slot because it's the action repeated most.</p>
+    <ul style="padding-left:18px;margin:8px 0 0;">
+      <li>Mono numerals · tabular figures</li>
+      <li>Press: 97% scale, 80ms ease-out</li>
+      <li>Haptic light tick (mobile) on every press</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+/* ── Container ───────────────────────────────────────────────────────────── */
+.container {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ── Trigger button ──────────────────────────────────────────────────────── */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(13 148 136 / .4);
+  border-radius: 50%;
+}
+
+.trigger:active {
+  transform: scale(0.97);
+}
+
+/* ── Avatar ──────────────────────────────────────────────────────────────── */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--teal-600);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.avatarLg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--teal-600);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Popup ───────────────────────────────────────────────────────────────── */
+.popup {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 220px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-2);
+  z-index: 50;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: popupIn 120ms var(--ease-out) both;
+  }
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── User info ───────────────────────────────────────────────────────────── */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin: var(--space-1) 0;
+}
+
+/* ── Menu item ───────────────────────────────────────────────────────────── */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-2);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  color: var(--color-danger);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-out);
+  min-height: var(--tap-min);
+}
+
+.menuItem:hover {
+  background: rgb(254 242 242);
+}
+
+.menuItem:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(220 38 38 / .3);
+}
+
+.menuItem:active {
+  transform: scale(0.98);
+}
+
+.menuItem:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

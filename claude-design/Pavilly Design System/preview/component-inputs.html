@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; font-weight: 500; color: var(--fg-2); }
+  .input {
+    height: 44px; padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    font-family: var(--font-sans); font-size: 15px; color: var(--fg-1);
+    outline: none;
+    transition: border 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+  }
+  .input:focus { border-color: var(--pavilly-teal-500); box-shadow: 0 0 0 3px rgba(53,133,142,0.20); }
+  .input.error { border-color: var(--pavilly-danger); }
+  .input.error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.20); }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-wrap .ico { position: absolute; left: 12px; color: var(--fg-3); width: 18px; height: 18px; pointer-events: none; }
+  .input-wrap .input { padding-left: 38px; flex: 1; }
+  .err { font-size: 12px; color: var(--pavilly-danger-fg); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .toggle {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 500;
+  }
+  .toggle .track {
+    width: 40px; height: 24px; background: var(--pavilly-teal-500);
+    border-radius: 999px; position: relative;
+  }
+  .toggle .track::after {
+    content: ""; position: absolute; top: 3px; left: 19px;
+    width: 18px; height: 18px; background: #fff; border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.off .track { background: var(--pavilly-ink-300); }
+  .toggle.off .track::after { left: 3px; }
+
+  .check {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--fg-1);
+  }
+  .check .box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--border-3); background: var(--surface);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .check.on .box { background: var(--pavilly-teal-500); border-color: var(--pavilly-teal-500); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row">
+    <div class="field">
+      <label>Product name</label>
+      <input class="input" value="Iced oat latte" />
+    </div>
+    <div class="field">
+      <label>Price</label>
+      <div class="input-wrap">
+        <span style="position:absolute;left:14px;color:var(--fg-3);font-family:var(--font-mono);">$</span>
+        <input class="input" style="padding-left:28px;font-family:var(--font-mono);font-variant-numeric:tabular-nums;" value="4.50" />
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label>Search products</label>
+    <div class="input-wrap">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="input" placeholder="Scan or type a name…" />
+    </div>
+  </div>
+  <div class="field">
+    <label>Customer email</label>
+    <input class="input error" value="ada@" />
+    <div class="err">That doesn't look like a complete email.</div>
+  </div>
+  <div style="display:flex;gap:24px;align-items:center;">
+    <div class="toggle"><span class="track"></span>Print receipt</div>
+    <div class="toggle off"><span class="track"></span>Email receipt</div>
+    <div class="check on"><span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Save customer</div>
+  </div>
+</div>
+</body>
+</html>

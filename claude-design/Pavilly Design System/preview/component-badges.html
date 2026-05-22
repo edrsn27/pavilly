@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="_card.css">
+<style>
+  .row3 { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; line-height: 1;
+  }
+  .badge.solid-success { background: #35858E; color: #fff; }
+  .badge.soft-success  { background: #ecf3f4; color: #235559; }
+  .badge.soft-warning  { background: #fbf2e0; color: #8a5a14; }
+  .badge.soft-danger   { background: #f8ecec; color: #9a3a3a; }
+  .badge.soft-info     { background: #ecf3f4; color: #235559; }
+  .badge.outline       { background: #fff; color: #42423a; border: 1px solid #d3d3c7; }
+  .badge.neutral       { background: #f4f4ee; color: #2d2d27; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px; border-radius: 999px;
+    background: #f4f4ee; color: #2d2d27;
+    font-size: 13px; font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .chip.active { background: #0a1b1d; color: #fff; }
+  .chip .close { opacity: 0.5; font-weight: 700; }
+  .label-mini { font-size: 11px; color: var(--fg-3); font-family: var(--font-mono); min-width: 84px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="row3"><div class="label-mini">status</div>
+    <span class="badge soft-success"><span class="dot"></span>Paid</span>
+    <span class="badge soft-warning"><span class="dot"></span>Pending</span>
+    <span class="badge soft-danger"><span class="dot"></span>Refunded</span>
+    <span class="badge soft-info"><span class="dot"></span>Syncing</span>
+    <span class="badge neutral">Draft</span>
+    <span class="badge outline">Cash</span>
+    <span class="badge solid-success">New</span>
+  </div>
+  <div class="row3"><div class="label-mini">chips</div>
+    <span class="chip active">All categories</span>
+    <span class="chip">Drinks</span>
+    <span class="chip">Pastries</span>
+    <span class="chip">Sandwiches</span>
+    <span class="chip">Merch</span>
+  </div>
+  <div class="row3"><div class="label-mini">filters</div>
+    <span class="chip" style="background:#0a1b1d;color:#fff;">Today <span class="close">×</span></span>
+    <span class="chip" style="background:#0a1b1d;color:#fff;">Card <span class="close">×</span></span>
+    <span class="chip">+ Add filter</span>
+  </div>
+</div>
+</body>
+</html>
