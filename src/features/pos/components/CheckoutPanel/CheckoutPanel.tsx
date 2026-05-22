@@ -159,97 +159,99 @@ export function CheckoutPanel({
           </div>
         </div>
 
-        {serverError && (
-          <div className={styles.errorBanner} role="alert">
-            {serverError}
-          </div>
-        )}
-
-        <div className={styles.section}>
-          <p className={styles.sectionLabel}>Payment method</p>
-          <Controller
-            name="paymentMethod"
-            control={control}
-            rules={{ required: "Select a payment method" }}
-            render={({ field }) => (
-              <div className={styles.paymentGrid}>
-                {PAYMENT_METHODS.map((pm) => (
-                  <button
-                    key={pm.value}
-                    type="button"
-                    className={`${styles.paymentBtn}${field.value === pm.value ? ` ${styles.paymentBtnActive}` : ""}`}
-                    onClick={() => field.onChange(pm.value)}
-                  >
-                    {pm.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          />
-          {errors.paymentMethod && (
-            <span className={styles.fieldError} role="alert">
-              {errors.paymentMethod.message}
-            </span>
+        <div className={styles.body}>
+          {serverError && (
+            <div className={styles.errorBanner} role="alert">
+              {serverError}
+            </div>
           )}
-        </div>
 
-        {isCash && (
           <div className={styles.section}>
-            <div className={styles.field}>
-              <label htmlFor="amount-tendered" className={styles.fieldLabel}>
-                Amount tendered (₱)
-              </label>
-              <input
-                id="amount-tendered"
-                type="number"
-                min={total}
-                step="0.01"
-                placeholder={total.toFixed(2)}
-                className={styles.input}
-                aria-describedby={
-                  errors.amountTendered ? "tendered-error" : undefined
-                }
-                {...register("amountTendered", {
-                  required: isCash ? "Enter amount tendered" : false,
-                  min: {
-                    value: total,
-                    message: `Minimum is ${formatPeso(total)}`,
-                  },
-                })}
-              />
-              {errors.amountTendered && (
-                <span id="tendered-error" className={styles.fieldError} role="alert">
-                  {errors.amountTendered.message}
-                </span>
+            <p className={styles.sectionLabel}>Payment method</p>
+            <Controller
+              name="paymentMethod"
+              control={control}
+              rules={{ required: "Select a payment method" }}
+              render={({ field }) => (
+                <div className={styles.paymentGrid}>
+                  {PAYMENT_METHODS.map((pm) => (
+                    <button
+                      key={pm.value}
+                      type="button"
+                      className={`${styles.paymentBtn}${field.value === pm.value ? ` ${styles.paymentBtnActive}` : ""}`}
+                      onClick={() => field.onChange(pm.value)}
+                    >
+                      {pm.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            />
+            {errors.paymentMethod && (
+              <span className={styles.fieldError} role="alert">
+                {errors.paymentMethod.message}
+              </span>
+            )}
+          </div>
+
+          {isCash && (
+            <div className={styles.section}>
+              <div className={styles.field}>
+                <label htmlFor="amount-tendered" className={styles.fieldLabel}>
+                  Amount tendered (₱)
+                </label>
+                <input
+                  id="amount-tendered"
+                  type="number"
+                  min={total}
+                  step="0.01"
+                  placeholder={total.toFixed(2)}
+                  className={styles.input}
+                  aria-describedby={
+                    errors.amountTendered ? "tendered-error" : undefined
+                  }
+                  {...register("amountTendered", {
+                    required: isCash ? "Enter amount tendered" : false,
+                    min: {
+                      value: total,
+                      message: `Minimum is ${formatPeso(total)}`,
+                    },
+                  })}
+                />
+                {errors.amountTendered && (
+                  <span id="tendered-error" className={styles.fieldError} role="alert">
+                    {errors.amountTendered.message}
+                  </span>
+                )}
+              </div>
+
+              {change !== null && (
+                <div
+                  className={`${styles.changeLine}${change < 0 ? ` ${styles.changeNegative}` : ""}`}
+                >
+                  <span>Change</span>
+                  <span className={styles.changeAmount}>
+                    {change < 0 ? "−" : ""}{formatPeso(Math.abs(change))}
+                  </span>
+                </div>
               )}
             </div>
+          )}
 
-            {change !== null && (
-              <div
-                className={`${styles.changeLine}${change < 0 ? ` ${styles.changeNegative}` : ""}`}
-              >
-                <span>Change</span>
-                <span className={styles.changeAmount}>
-                  {change < 0 ? "−" : ""}{formatPeso(Math.abs(change))}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className={styles.section}>
-          <div className={styles.field}>
-            <label htmlFor="checkout-notes" className={styles.fieldLabel}>
-              Notes{" "}
-              <span className={styles.fieldLabelHint}>(optional)</span>
-            </label>
-            <input
-              id="checkout-notes"
-              type="text"
-              placeholder="e.g. Customer request"
-              className={styles.input}
-              {...register("notes")}
-            />
+          <div className={styles.section}>
+            <div className={styles.field}>
+              <label htmlFor="checkout-notes" className={styles.fieldLabel}>
+                Notes{" "}
+                <span className={styles.fieldLabelHint}>(optional)</span>
+              </label>
+              <input
+                id="checkout-notes"
+                type="text"
+                placeholder="e.g. Customer request"
+                className={styles.input}
+                {...register("notes")}
+              />
+            </div>
           </div>
         </div>
 

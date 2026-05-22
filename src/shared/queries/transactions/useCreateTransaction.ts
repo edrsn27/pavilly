@@ -75,6 +75,9 @@ export const useCreateTransaction = () => {
       queryClient.invalidateQueries({
         queryKey: inventoryQueryKey(variables.storeId),
       });
+      queryClient.invalidateQueries({
+        queryKey: ["transactions", { storeId: variables.storeId }],
+      });
     },
   });
 };
