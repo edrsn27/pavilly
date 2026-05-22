@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -12,7 +13,7 @@ export default function Home() {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
           </nav>
-          <a href="/login" className={styles.navCta}>Get started</a>
+          <Link href="/login" className={styles.navCta}>Get started</Link>
         </div>
       </header>
 
@@ -35,7 +36,7 @@ export default function Home() {
               family member knows exactly how the store is doing.
             </p>
             <div className={styles.heroCtas}>
-              <a href="/login" className={styles.btnPrimary}>Open the POS</a>
+              <Link href="/login" className={styles.btnPrimary}>Open the POS</Link>
               <a href="#features" className={styles.btnGhost}>See what&rsquo;s inside</a>
             </div>
           </div>
@@ -224,9 +225,9 @@ export default function Home() {
             Open the POS and start selling. No setup fee, no subscription —
             just a smarter way to run the store your family built.
           </p>
-          <a href="/login" className={styles.btnPrimaryLg}>
+          <Link href="/login" className={styles.btnPrimaryLg}>
             Get started now
-          </a>
+          </Link>
         </section>
 
       </main>

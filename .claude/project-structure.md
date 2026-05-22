@@ -273,11 +273,11 @@ Within the same feature, direct imports are fine.
 
 ## User roles
 
-| Role | Access |
-|------|--------|
-| `admin` | All pages: vendor management, all products, all transactions, reports |
-| `vendor` | Their own products, inventory, transactions + POS terminal |
-| `cashier` | POS terminal only |
+| Role | How they join | Access |
+|------|--------------|--------|
+| `admin` | System-level | All pages: vendor management, all products, all transactions, reports |
+| `vendor` | Self-registration (default role on signup) | Own products, inventory, transactions + POS terminal. Can invite cashiers. |
+| `cashier` | Invited by a vendor | POS terminal only |
 
 Route groups map directly to roles. `RoleGuard` in `shared/components/` wraps route group layouts to enforce access.
 
