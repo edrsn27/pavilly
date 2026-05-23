@@ -14,13 +14,12 @@ interface StoreFields {
 }
 
 interface StoreModalProps {
-  open: boolean;
   onClose: () => void;
   /** Pass an existing store to switch to update mode */
   store?: Store;
 }
 
-export function StoreModal({ open, onClose, store }: StoreModalProps) {
+export function StoreModal({ onClose, store }: StoreModalProps) {
   const isUpdate = !!store;
   const { mutate: createStore, isPending: creating } = useCreateStore();
   const { mutate: updateStore, isPending: updating } = useUpdateStore();
@@ -29,31 +28,24 @@ export function StoreModal({ open, onClose, store }: StoreModalProps) {
   const {
     register,
     handleSubmit,
-    reset,
     setError,
     formState: { errors },
-  } = useForm<StoreFields>({ mode: "onTouched" });
+  } = useForm<StoreFields>({
+    mode: "onTouched",
+    defaultValues: {
+      name: store?.name ?? "",
+      description: store?.description ?? "",
+      logo_url: store?.logo_url ?? "",
+    },
+  });
 
   useEffect(() => {
-    if (open) {
-      reset({
-        name: store?.name ?? "",
-        description: store?.description ?? "",
-        logo_url: store?.logo_url ?? "",
-      });
-    }
-  }, [open, store, reset]);
-
-  useEffect(() => {
-    if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
-
-  if (!open) return null;
+  }, [onClose]);
 
   const onSubmit = (data: StoreFields) => {
     const payload = {

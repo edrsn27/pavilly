@@ -12,7 +12,9 @@
       "Bash(mv \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\pointofsale\" \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\point-of-sale\")",
       "Bash(node -e \"console.log\\(require\\('./node_modules/@tanstack/react-table/package.json'\\).version\\)\")",
       "Bash(xargs grep -l \"transactions.*insert\\\\|useMutation.*transaction\")",
-      "Bash(xargs findstr /I \"category\\\\|categor\")"
+      "Bash(xargs findstr /I \"category\\\\|categor\")",
+      "PowerShell(Get-ChildItem -Path \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\" -Recurse | Where-Object {$_.PSIsContainer -and $_.Name -match '^\\\\\\('})",
+      "Bash(grep -E '\\(page\\\\.tsx|layout\\\\.tsx\\)$')"
     ]
   }
 }

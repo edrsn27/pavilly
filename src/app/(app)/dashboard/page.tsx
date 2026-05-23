@@ -83,7 +83,13 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      <StoreModal open={modalOpen} onClose={handleClose} store={editingStore} />
+      {modalOpen && (
+        <StoreModal
+          key={editingStore?.id ?? "create"}
+          onClose={handleClose}
+          store={editingStore}
+        />
+      )}
 
       {isLoading ? (
         <div className={styles.loading}>Loading…</div>
