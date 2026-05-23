@@ -42,7 +42,11 @@ export function CategoryModal({
           : { name: "", sort_order: nextSortOrder }
       );
     }
-  }, [open, editing, nextSortOrder, reset]);
+    // Only reset when the modal opens or the editing target changes.
+    // Excluding nextSortOrder intentionally — a list refetch mid-session
+    // would otherwise blank out the name field the user is typing into.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editing]);
 
   if (!open) return null;
 
@@ -79,19 +83,26 @@ export function CategoryModal({
 
           <div className={styles.field}>
             <label htmlFor="cat-order" className={styles.label}>
-              Sort order
+              Sort order <span className={styles.required} aria-hidden="true">*</span>
             </label>
             <input
               id="cat-order"
               type="number"
               min={0}
-              className={styles.input}
+              aria-invalid={!!errors.sort_order}
+              aria-describedby={errors.sort_order ? "cat-order-error" : undefined}
+              className={`${styles.input}${errors.sort_order ? ` ${styles.inputError}` : ""}`}
               {...register("sort_order", {
-                required: true,
+                required: "Sort order is required.",
                 valueAsNumber: true,
-                min: 0,
+                min: { value: 0, message: "Must be ≥ 0" },
               })}
             />
+            {errors.sort_order && (
+              <span id="cat-order-error" className={styles.error} role="alert">
+                {errors.sort_order.message}
+              </span>
+            )}
           </div>
 
           <div className={styles.footer}>

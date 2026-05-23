@@ -67,6 +67,19 @@
   box-shadow: 0 0 0 3px rgb(13 148 136 / 0.15);
 }
 
+.required {
+  color: #b91c1c;
+}
+
+.inputError {
+  border-color: #b91c1c;
+}
+
+.inputError:focus {
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 3px rgb(185 28 28 / 0.15);
+}
+
 .error {
   font-size: 0.8125rem;
   color: #b91c1c;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
@@ -61,14 +61,14 @@ export default function CategoriesPage() {
     [categories]
   );
 
-  const openEdit = (cat: Category) => {
+  const openEdit = useCallback((cat: Category) => {
     setEditing(cat);
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleDelete = (cat: Category) => {
+  const handleDelete = useCallback((cat: Category) => {
     deleteCategory({ id: cat.id, storeId });
-  };
+  }, [deleteCategory, storeId]);
 
   const columns = useMemo(
     () => [
@@ -108,8 +108,7 @@ export default function CategoriesPage() {
         ),
       }),
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [storeId]
+    [openEdit, handleDelete]
   );
 
   const table = useReactTable({
