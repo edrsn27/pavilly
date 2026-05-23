@@ -10,6 +10,9 @@
 }
 
 .dialog {
+  /* Reset browser-default <dialog> absolute positioning */
+  position: static;
+  margin: 0;
   width: 100%;
   max-width: 400px;
   background: var(--color-surface);

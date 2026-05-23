@@ -68,7 +68,7 @@
 
 .table {
   width: 100%;
-  min-width: 430px;
+  min-width: 448px;
   table-layout: fixed;
   border-collapse: collapse;
 }
@@ -85,6 +85,8 @@
   background: var(--color-surface);
   white-space: nowrap;
   user-select: none;
+  /* Pinned header cells sit above pinned body cells */
+  z-index: 2;
 }
 
 .thSortable {

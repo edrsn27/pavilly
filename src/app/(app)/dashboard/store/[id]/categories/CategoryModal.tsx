@@ -67,6 +67,7 @@ export function CategoryModal({
               type="text"
               className={styles.input}
               autoFocus
+              autoComplete="off"
               {...register("name", { required: "Name is required" })}
             />
             {errors.name && (

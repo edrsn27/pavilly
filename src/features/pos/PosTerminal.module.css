@@ -34,6 +34,17 @@
 }
 
 @media (max-width: 767px) {
+  /* Escape the AppShell content padding (--space-3) so the POS fills edge-to-edge */
+  .terminal {
+    margin-top: calc(-1 * var(--space-3));
+    margin-left: calc(-1 * var(--space-3));
+    margin-right: calc(-1 * var(--space-3));
+  }
+
+  .productPane {
+    padding: var(--space-2);
+  }
+
   .cartFab {
     display: flex;
     align-items: center;

@@ -9,6 +9,8 @@ import {
   getSortedRowModel,
   useReactTable,
   type SortingState,
+  type ColumnPinningState,
+  type Column,
 } from "@tanstack/react-table";
 import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import {
@@ -22,6 +24,20 @@ import { CategoryModal } from "./CategoryModal";
 import styles from "./categories.module.css";
 
 const col = createColumnHelper<Category>();
+
+const PINNED: ColumnPinningState = { left: ["name"], right: ["actions"] };
+
+const pinStyle = (column: Column<Category>): React.CSSProperties => {
+  const side = column.getIsPinned();
+  if (!side) return { width: column.getSize() };
+  return {
+    position: "sticky",
+    left: side === "left" ? column.getStart("left") : undefined,
+    right: side === "right" ? column.getAfter("right") : undefined,
+    zIndex: 1,
+    width: column.getSize(),
+  };
+};
 
 export default function CategoriesPage() {
   const { id: storeId } = useParams<{ id: string }>();
@@ -64,12 +80,12 @@ export default function CategoriesPage() {
       col.accessor("sort_order", {
         id: "sort_order",
         header: "Sort order",
-        size: 110,
+        size: 120,
       }),
       col.display({
         id: "actions",
         header: "",
-        size: 80,
+        size: 88,
         cell: ({ row }) => (
           <div className={styles.actions}>
             <button
@@ -99,7 +115,7 @@ export default function CategoriesPage() {
   const table = useReactTable({
     data: categories,
     columns,
-    state: { sorting },
+    state: { sorting, columnPinning: PINNED },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -150,24 +166,13 @@ export default function CategoriesPage() {
                       <th
                         key={header.id}
                         className={`${styles.th}${canSort ? ` ${styles.thSortable}` : ""}`}
-                        style={{ width: header.column.getSize() }}
-                        onClick={
-                          canSort
-                            ? header.column.getToggleSortingHandler()
-                            : undefined
-                        }
+                        style={pinStyle(header.column)}
+                        onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                       >
                         <span className={styles.thInner}>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                           {canSort && (
-                            <span
-                              className={
-                                sorted ? styles.sortIcon : styles.sortIconIdle
-                              }
-                            >
+                            <span className={sorted ? styles.sortIcon : styles.sortIconIdle}>
                               {sorted === "asc" ? (
                                 <ChevronUp size={12} />
                               ) : sorted === "desc" ? (
@@ -191,12 +196,9 @@ export default function CategoriesPage() {
                     <td
                       key={cell.id}
                       className={`${styles.td}${cell.column.id === "sort_order" ? ` ${styles.colNumeric}` : ""}`}
-                      style={{ width: cell.column.getSize() }}
+                      style={pinStyle(cell.column)}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
                 </tr>
