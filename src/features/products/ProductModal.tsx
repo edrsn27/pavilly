@@ -15,6 +15,7 @@ interface ProductFields {
   price_type: "fixed" | "variable";
   cost_price: string;
   selling_price: string;
+  stock: string;
   is_active: boolean;
 }
 
@@ -52,6 +53,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
         price_type: product?.price_type ?? "fixed",
         cost_price: product?.cost_price != null ? String(product.cost_price) : "",
         selling_price: product?.selling_price != null ? String(product.selling_price) : "",
+        stock: product?.inventory?.stock != null ? String(product.inventory.stock) : "0",
         is_active: product?.is_active ?? true,
       });
     }
@@ -69,6 +71,11 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
   if (!open) return null;
 
   const onSubmit = (data: ProductFields) => {
+    const stock =
+      data.price_type === "fixed" && data.stock !== ""
+        ? Math.max(0, parseInt(data.stock, 10) || 0)
+        : undefined;
+
     const payload = {
       name: data.name.trim(),
       description: data.description.trim() || undefined,
@@ -84,7 +91,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
 
     if (isUpdate) {
       updateProduct(
-        { id: product.id, store_id: storeId, ...payload },
+        { id: product.id, store_id: storeId, stock, ...payload },
         {
           onSuccess: onClose,
           onError: (err) =>
@@ -95,7 +102,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
       );
     } else {
       createProduct(
-        { store_id: storeId, ...payload },
+        { store_id: storeId, initialStock: stock, ...payload },
         {
           onSuccess: onClose,
           onError: (err) =>
@@ -283,6 +290,34 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
                 </div>
               )}
             </div>
+
+            {/* Stock (fixed products only) */}
+            {priceType === "fixed" && (
+              <div className={styles.field}>
+                <label htmlFor="product-stock" className={styles.label}>
+                  Stock <span className={styles.labelHint}>(units on hand)</span>
+                </label>
+                <input
+                  id="product-stock"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  aria-invalid={!!errors.stock}
+                  aria-describedby={errors.stock ? "product-stock-error" : undefined}
+                  className={`${styles.input}${errors.stock ? ` ${styles.inputError}` : ""}`}
+                  {...register("stock", {
+                    min: { value: 0, message: "Stock must be ≥ 0" },
+                    pattern: { value: /^\d*$/, message: "Whole numbers only" },
+                  })}
+                />
+                {errors.stock && (
+                  <span id="product-stock-error" className={styles.fieldError} role="alert">
+                    {errors.stock.message}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Active toggle (edit only) */}
             {isUpdate && (

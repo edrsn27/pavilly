@@ -55,7 +55,7 @@ export function CheckoutPanel({
   } = useForm<FormValues>({
     mode: "onTouched",
     defaultValues: {
-      paymentMethod: "",
+      paymentMethod: "cash" as PaymentMethod | "",
       amountTendered: "",
       notes: "",
     },

@@ -14,7 +14,13 @@
       "Bash(xargs grep -l \"transactions.*insert\\\\|useMutation.*transaction\")",
       "Bash(xargs findstr /I \"category\\\\|categor\")",
       "PowerShell(Get-ChildItem -Path \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\" -Recurse | Where-Object {$_.PSIsContainer -and $_.Name -match '^\\\\\\('})",
-      "Bash(grep -E '\\(page\\\\.tsx|layout\\\\.tsx\\)$')"
+      "Bash(grep -E '\\(page\\\\.tsx|layout\\\\.tsx\\)$')",
+      "Bash(find \"E:\\\\\\\\pavilly\\\\\\\\src\\\\\\\\shared\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\))",
+      "Bash(find \"E:\\\\\\\\pavilly\\\\\\\\src\" -type f \\\\\\( -name \"*atom*\" -o -name \"*store*\" \\\\\\))",
+      "Bash(Get-ChildItem -Path \"E:\\\\pavilly\\\\src\\\\app\\\\dashboard\" -Recurse -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(mkdir -p \"E:\\\\pavilly\\\\src\\\\app\\\\\\(app\\)\\\\dashboard\\\\store\\\\[id]\\\\dashboard\")"
     ]
   }
 }

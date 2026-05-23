@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/shared/queries/products";
 import type { CartItem } from "./PosTerminal.types";
 import { ProductGrid } from "./components/ProductGrid/ProductGrid";
@@ -150,8 +151,6 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         <ProductGrid
           storeId={storeId}
           onAddProduct={addProduct}
-          itemCount={itemCount}
-          onViewCart={() => setView("cart")}
         />
       </div>
 
@@ -159,7 +158,23 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         {sidebarContent}
       </div>
 
-<VariablePriceDialog
+      {/* Cart FAB — mobile only, shown on product view */}
+      {view === "products" && (
+        <button
+          className={styles.cartFab}
+          onClick={() => setView("cart")}
+          aria-label={`View cart, ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
+        >
+          <ShoppingCart size={22} aria-hidden="true" />
+          {itemCount > 0 && (
+            <span className={styles.cartFabBadge} aria-hidden="true">
+              {itemCount > 99 ? "99+" : itemCount}
+            </span>
+          )}
+        </button>
+      )}
+
+      <VariablePriceDialog
         productName={pendingVariable?.name ?? ""}
         open={pendingVariable !== null}
         onConfirm={handleVariableConfirm}

@@ -52,55 +52,6 @@
   color: var(--color-primary);
 }
 
-.cartBtn {
-  flex-shrink: 0;
-  min-width: var(--tap-pos);
-  height: var(--tap-pos);
-  padding: 0 var(--space-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
-}
-
-.cartBtn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-}
-
-.cartBtn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgb(13 148 136 / .4);
-}
-
-.cartBtn:active { transform: scale(0.97); }
-
-.cartBadge {
-  min-width: 20px;
-  height: 20px;
-  padding: 0 5px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  font-family: var(--font-numeric);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-@media (min-width: 768px) {
-  .cartBtn { display: none; }
-}
 
 .categoryTabActive {
   border-color: var(--color-primary);

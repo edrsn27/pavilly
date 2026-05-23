@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ShoppingCart } from "lucide-react";
+import { Search } from "lucide-react";
 import { useProducts, type Product } from "@/shared/queries/products";
 import { useCategories } from "@/shared/queries/categories";
 import styles from "./ProductGrid.module.css";
@@ -9,8 +9,6 @@ import styles from "./ProductGrid.module.css";
 interface ProductGridProps {
   storeId: string;
   onAddProduct: (product: Product) => void;
-  itemCount: number;
-  onViewCart: () => void;
 }
 
 const formatPeso = (amount: number) =>
@@ -20,7 +18,7 @@ const formatPeso = (amount: number) =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-export function ProductGrid({ storeId, onAddProduct, itemCount, onViewCart }: ProductGridProps) {
+export function ProductGrid({ storeId, onAddProduct }: ProductGridProps) {
   const { data: products = [] } = useProducts(storeId);
   const { data: categories = [] } = useCategories(storeId);
 
@@ -65,18 +63,6 @@ export function ProductGrid({ storeId, onAddProduct, itemCount, onViewCart }: Pr
             </button>
           ))}
           </div>
-
-          <button
-            type="button"
-            className={styles.cartBtn}
-            onClick={onViewCart}
-            aria-label={`View cart, ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
-          >
-            <ShoppingCart size={20} aria-hidden="true" />
-            {itemCount > 0 && (
-              <span className={styles.cartBadge}>{itemCount}</span>
-            )}
-          </button>
         </div>
 
         <div className={styles.searchWrapper}>

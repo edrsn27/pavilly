@@ -78,6 +78,12 @@ export const useCreateTransaction = () => {
       queryClient.invalidateQueries({
         queryKey: ["transactions", { storeId: variables.storeId }],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "stats", variables.storeId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "recent-transactions", variables.storeId],
+      });
     },
   });
 };

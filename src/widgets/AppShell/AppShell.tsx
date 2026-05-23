@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import {
   LayoutDashboard,
   MonitorSmartphone,
@@ -9,6 +10,8 @@ import {
   Tag,
   Warehouse,
   ReceiptText,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { AccountMenu } from "@/widgets/AccountMenu";
 import { StoreSwitcher } from "@/widgets/StoreSwitcher";
@@ -23,6 +26,21 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const params = useParams();
   const storeId = typeof params.id === "string" ? params.id : undefined;
+  const [fabOpen, setFabOpen] = useState(false);
+  const fabRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!fabOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (fabRef.current && !fabRef.current.contains(e.target as Node)) {
+        setFabOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [fabOpen]);
+
+  useEffect(() => { setFabOpen(false); }, [pathname]);
 
   const navItems = storeId
     ? [
@@ -35,6 +53,22 @@ export function AppShell({ children }: AppShellProps) {
     : [
         { href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard },
       ];
+
+  const mobileNavItems = storeId
+    ? [
+        { href: routes.store.dashboard(storeId),     label: "Dashboard", Icon: LayoutDashboard },
+        { href: routes.store.pos(storeId),           label: "POS",       Icon: MonitorSmartphone },
+        { href: routes.store.products(storeId),      label: "Products",  Icon: Package },
+        { href: routes.store.inventory(storeId),     label: "Inventory", Icon: Warehouse },
+      ]
+    : [{ href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard }];
+
+  const fabItems = storeId
+    ? [
+        { href: routes.store.categories(storeId),   label: "Categories",   Icon: Tag },
+        { href: routes.store.transactions(storeId), label: "Transactions", Icon: ReceiptText },
+      ]
+    : [];
 
   return (
     <div className={styles.shell}>
@@ -81,7 +115,7 @@ export function AppShell({ children }: AppShellProps) {
 
         {/* ── Bottom nav (mobile only) ──────────────────────────── */}
         <nav className={styles.bottomNav} aria-label="Main navigation">
-          {navItems.map(({ href, label, Icon }) => {
+          {mobileNavItems.map(({ href, label, Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
@@ -100,6 +134,43 @@ export function AppShell({ children }: AppShellProps) {
             );
           })}
         </nav>
+
+        {/* ── FAB for overflow nav items (mobile only) ──────────── */}
+        {fabItems.length > 0 && (
+          <div className={styles.fab} ref={fabRef}>
+            {fabOpen && (
+              <div className={styles.fabMenu} role="menu">
+                {fabItems.map(({ href, label, Icon }) => {
+                  const active = pathname === href || pathname.startsWith(`${href}/`);
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      role="menuitem"
+                      className={`${styles.fabMenuItem}${active ? ` ${styles.fabMenuItemActive}` : ""}`}
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setFabOpen(false)}
+                    >
+                      <Icon size={20} strokeWidth={active ? 2 : 1.75} aria-hidden="true" />
+                      <span>{label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              className={`${styles.fabButton}${fabOpen ? ` ${styles.fabButtonOpen}` : ""}`}
+              onClick={() => setFabOpen((v) => !v)}
+              aria-label={fabOpen ? "Close menu" : "More navigation options"}
+              aria-expanded={fabOpen}
+            >
+              {fabOpen
+                ? <X size={22} aria-hidden="true" />
+                : <MoreHorizontal size={22} aria-hidden="true" />
+              }
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
