@@ -5,7 +5,7 @@ export interface CreateGcashTransactionParams {
   storeId: string;
   transactionType: "gcash_in" | "gcash_out";
   gcashAccountId: string;
-  customerNumber: string;
+  customerNumber?: string;
   amount: number;
   referenceNumber?: string;
   profit: number;
@@ -41,7 +41,7 @@ export const useCreateGcashTransaction = () => {
         .insert({
           transaction_id: tx.id,
           gcash_account_id: params.gcashAccountId,
-          customer_number: params.customerNumber,
+          customer_number: params.customerNumber ?? null,
           reference_number: params.referenceNumber ?? null,
           amount: params.amount,
           profit: params.profit,

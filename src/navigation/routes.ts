@@ -15,6 +15,7 @@ export const routes = {
     categories:   (id: string) => `/dashboard/store/${id}/categories`,
     inventory:    (id: string) => `/dashboard/store/${id}/inventory`,
     transactions: (id: string) => `/dashboard/store/${id}/transactions`,
+    gcash:         (id: string) => `/dashboard/store/${id}/gcash`,
     gcashAccounts: (id: string) => `/dashboard/store/${id}/gcash-accounts`,
   },
 } as const;

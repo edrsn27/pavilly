@@ -83,7 +83,7 @@ export function GcashServiceModal({ storeId, type, onClose }: GcashServiceModalP
         storeId,
         transactionType: type,
         gcashAccountId: values.gcashAccountId,
-        customerNumber: values.customerNumber.trim(),
+        customerNumber: values.customerNumber.trim() || undefined,
         amount: parseFloat(values.amount),
         referenceNumber: values.referenceNumber.trim() || undefined,
         profit: parseFloat(values.profit),
@@ -161,7 +161,8 @@ export function GcashServiceModal({ storeId, type, onClose }: GcashServiceModalP
 
                 <div className={styles.field}>
                   <label htmlFor="customer-number" className={styles.label}>
-                    Customer GCash number <span className={styles.required} aria-hidden="true">*</span>
+                    Customer GCash number{" "}
+                    <span className={styles.labelHint}>(optional)</span>
                   </label>
                   <input
                     id="customer-number"
@@ -172,8 +173,8 @@ export function GcashServiceModal({ storeId, type, onClose }: GcashServiceModalP
                     aria-invalid={!!errors.customerNumber}
                     aria-describedby={errors.customerNumber ? "customer-number-error" : undefined}
                     {...register("customerNumber", {
-                      required: "Customer number is required.",
-                      pattern: { value: /^09\d{9}$/, message: "Enter a valid 11-digit mobile number." },
+                      validate: (v) =>
+                        !v || /^09\d{9}$/.test(v) || "Enter a valid 11-digit mobile number.",
                     })}
                   />
                   {errors.customerNumber && (

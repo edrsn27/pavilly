@@ -11,6 +11,7 @@ import {
   Warehouse,
   ReceiptText,
   Wallet,
+  Smartphone,
   MoreHorizontal,
   X,
 } from "lucide-react";
@@ -82,6 +83,11 @@ export function AppShell({ children }: AppShellProps) {
           Icon: ReceiptText,
         },
         {
+          href: routes.store.gcash(storeId),
+          label: "GCash Services",
+          Icon: Smartphone,
+        },
+        {
           href: routes.store.gcashAccounts(storeId),
           label: "GCash Accounts",
           Icon: Wallet,
@@ -107,15 +113,20 @@ export function AppShell({ children }: AppShellProps) {
           Icon: Package,
         },
         {
-          href: routes.store.inventory(storeId),
-          label: "Inventory",
-          Icon: Warehouse,
+          href: routes.store.gcash(storeId),
+          label: "GCash",
+          Icon: Smartphone,
         },
       ]
     : [{ href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard }];
 
   const fabItems = storeId
     ? [
+        {
+          href: routes.store.inventory(storeId),
+          label: "Inventory",
+          Icon: Warehouse,
+        },
         {
           href: routes.store.categories(storeId),
           label: "Categories",

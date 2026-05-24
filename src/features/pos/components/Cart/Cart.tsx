@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag, X, ChevronLeft, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { ShoppingBag, X, ChevronLeft } from "lucide-react";
 import type { CartItem } from "../../PosTerminal.types";
 import styles from "./Cart.module.css";
 
@@ -20,8 +20,6 @@ interface CartProps {
   onClear: () => void;
   onCheckout: () => void;
   onClose?: () => void;
-  onGcashIn: () => void;
-  onGcashOut: () => void;
 }
 
 const formatPeso = (amount: number) =>
@@ -38,8 +36,6 @@ export function Cart({
   onClear,
   onCheckout,
   onClose,
-  onGcashIn,
-  onGcashOut,
 }: CartProps) {
   const total = items.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -163,19 +159,6 @@ export function Cart({
           Checkout →
         </button>
 
-        <div className={styles.gcashServices}>
-          <span className={styles.gcashServicesLabel}>GCash Services</span>
-          <div className={styles.gcashServiceBtns}>
-            <button type="button" className={styles.gcashBtn} onClick={onGcashIn}>
-              <ArrowDownLeft size={14} aria-hidden="true" />
-              Cash In
-            </button>
-            <button type="button" className={styles.gcashBtn} onClick={onGcashOut}>
-              <ArrowUpRight size={14} aria-hidden="true" />
-              Cash Out
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
