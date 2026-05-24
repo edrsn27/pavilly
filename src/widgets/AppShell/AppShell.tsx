@@ -27,7 +27,15 @@ export function AppShell({ children }: AppShellProps) {
   const params = useParams();
   const storeId = typeof params.id === "string" ? params.id : undefined;
   const [fabOpen, setFabOpen] = useState(false);
+  const [fabPathname, setFabPathname] = useState(pathname);
   const fabRef = useRef<HTMLDivElement>(null);
+
+  // Close FAB when the route changes. Derived-state reset during render —
+  // React re-renders synchronously before painting, avoiding the effect warning.
+  if (pathname !== fabPathname) {
+    setFabPathname(pathname);
+    setFabOpen(false);
+  }
 
   useEffect(() => {
     if (!fabOpen) return;
@@ -40,33 +48,73 @@ export function AppShell({ children }: AppShellProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, [fabOpen]);
 
-  useEffect(() => { setFabOpen(false); }, [pathname]);
-
   const navItems = storeId
     ? [
-        { href: routes.store.pos(storeId),          label: "POS Terminal", Icon: MonitorSmartphone },
-        { href: routes.store.products(storeId),      label: "Products",     Icon: Package },
-        { href: routes.store.categories(storeId),    label: "Categories",   Icon: Tag },
-        { href: routes.store.inventory(storeId),     label: "Inventory",    Icon: Warehouse },
-        { href: routes.store.transactions(storeId),  label: "Transactions", Icon: ReceiptText },
+        {
+          href: routes.store.pos(storeId),
+          label: "POS Terminal",
+          Icon: MonitorSmartphone,
+        },
+        {
+          href: routes.store.products(storeId),
+          label: "Products",
+          Icon: Package,
+        },
+        {
+          href: routes.store.categories(storeId),
+          label: "Categories",
+          Icon: Tag,
+        },
+        {
+          href: routes.store.inventory(storeId),
+          label: "Inventory",
+          Icon: Warehouse,
+        },
+        {
+          href: routes.store.transactions(storeId),
+          label: "Transactions",
+          Icon: ReceiptText,
+        },
       ]
-    : [
-        { href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard },
-      ];
+    : [{ href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard }];
 
   const mobileNavItems = storeId
     ? [
-        { href: routes.store.dashboard(storeId),     label: "Dashboard", Icon: LayoutDashboard },
-        { href: routes.store.pos(storeId),           label: "POS",       Icon: MonitorSmartphone },
-        { href: routes.store.products(storeId),      label: "Products",  Icon: Package },
-        { href: routes.store.inventory(storeId),     label: "Inventory", Icon: Warehouse },
+        {
+          href: routes.store.dashboard(storeId),
+          label: "Dashboard",
+          Icon: LayoutDashboard,
+        },
+        {
+          href: routes.store.pos(storeId),
+          label: "POS",
+          Icon: MonitorSmartphone,
+        },
+        {
+          href: routes.store.products(storeId),
+          label: "Products",
+          Icon: Package,
+        },
+        {
+          href: routes.store.inventory(storeId),
+          label: "Inventory",
+          Icon: Warehouse,
+        },
       ]
     : [{ href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard }];
 
   const fabItems = storeId
     ? [
-        { href: routes.store.categories(storeId),   label: "Categories",   Icon: Tag },
-        { href: routes.store.transactions(storeId), label: "Transactions", Icon: ReceiptText },
+        {
+          href: routes.store.categories(storeId),
+          label: "Categories",
+          Icon: Tag,
+        },
+        {
+          href: routes.store.transactions(storeId),
+          label: "Transactions",
+          Icon: ReceiptText,
+        },
       ]
     : [];
 
@@ -75,7 +123,9 @@ export function AppShell({ children }: AppShellProps) {
       {/* ── Sidebar ──────────────────────────────────────────────── */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarTop}>
-          <Link href="/" className={styles.wordmark}>Pavilly</Link>
+          <Link href="/" className={styles.wordmark}>
+            Pavilly
+          </Link>
         </div>
 
         <nav className={styles.nav} aria-label="Main navigation">
@@ -109,9 +159,7 @@ export function AppShell({ children }: AppShellProps) {
           <AccountMenu />
         </header>
 
-        <main className={styles.content}>
-          {children}
-        </main>
+        <main className={styles.content}>{children}</main>
 
         {/* ── Bottom nav (mobile only) ──────────────────────────── */}
         <nav className={styles.bottomNav} aria-label="Main navigation">
@@ -141,7 +189,8 @@ export function AppShell({ children }: AppShellProps) {
             {fabOpen && (
               <div className={styles.fabMenu} role="menu">
                 {fabItems.map(({ href, label, Icon }) => {
-                  const active = pathname === href || pathname.startsWith(`${href}/`);
+                  const active =
+                    pathname === href || pathname.startsWith(`${href}/`);
                   return (
                     <Link
                       key={href}
@@ -151,7 +200,11 @@ export function AppShell({ children }: AppShellProps) {
                       aria-current={active ? "page" : undefined}
                       onClick={() => setFabOpen(false)}
                     >
-                      <Icon size={20} strokeWidth={active ? 2 : 1.75} aria-hidden="true" />
+                      <Icon
+                        size={20}
+                        strokeWidth={active ? 2 : 1.75}
+                        aria-hidden="true"
+                      />
                       <span>{label}</span>
                     </Link>
                   );
@@ -164,10 +217,11 @@ export function AppShell({ children }: AppShellProps) {
               aria-label={fabOpen ? "Close menu" : "More navigation options"}
               aria-expanded={fabOpen}
             >
-              {fabOpen
-                ? <X size={22} aria-hidden="true" />
-                : <MoreHorizontal size={22} aria-hidden="true" />
-              }
+              {fabOpen ? (
+                <X size={22} aria-hidden="true" />
+              ) : (
+                <MoreHorizontal size={22} aria-hidden="true" />
+              )}
             </button>
           </div>
         )}

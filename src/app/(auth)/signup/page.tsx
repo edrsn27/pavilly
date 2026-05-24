@@ -27,6 +27,7 @@ export default function SignupPage() {
     register,
     handleSubmit,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<SignUpFields>({ mode: "onTouched" });
 
@@ -180,7 +181,7 @@ export default function SignupPage() {
                 className={`${styles.input}${errors.confirmPassword ? ` ${styles.inputError}` : ""}`}
                 {...register("confirmPassword", {
                   required: "Please confirm your password.",
-                  validate: (value) => value === watch("password") || "Passwords do not match.",
+                  validate: (value) => value === getValues("password") || "Passwords do not match.",
                 })}
               />
               {errors.confirmPassword && (
