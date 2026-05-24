@@ -10,7 +10,6 @@
 }
 
 .dialog {
-  position: static;
   margin: 0;
   width: 100%;
   max-width: 420px;

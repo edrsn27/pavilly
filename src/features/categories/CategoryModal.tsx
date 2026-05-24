@@ -50,8 +50,9 @@ export function CategoryModal({
 
   return (
     <div className={styles.backdrop}>
-      <dialog
-        open
+      <div
+        role="dialog"
+        aria-modal="true"
         className={styles.dialog}
         aria-label={editing ? "Edit category" : "Add category"}
       >
@@ -111,7 +112,7 @@ export function CategoryModal({
             </button>
           </div>
         </form>
-      </dialog>
+      </div>
     </div>
   );
 }

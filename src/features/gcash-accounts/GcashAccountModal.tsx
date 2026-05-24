@@ -63,8 +63,9 @@ export function GcashAccountModal({ storeId, open, editing, onClose }: GcashAcco
 
   return (
     <div className={styles.backdrop}>
-      <dialog
-        open
+      <div
+        role="dialog"
+        aria-modal="true"
         className={styles.dialog}
         aria-labelledby="gcash-account-modal-title"
       >
@@ -153,7 +154,7 @@ export function GcashAccountModal({ storeId, open, editing, onClose }: GcashAcco
             </button>
           </div>
         </form>
-      </dialog>
+      </div>
     </div>
   );
 }

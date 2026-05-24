@@ -22,6 +22,14 @@ interface FormValues {
   profit: string;
 }
 
+const FEE_BRACKET = 500;
+const FEE_PER_BRACKET = 5;
+
+function suggestServiceFee(amount: number): number {
+  if (amount <= 0 || isNaN(amount)) return 0;
+  return Math.ceil(amount / FEE_BRACKET) * FEE_PER_BRACKET;
+}
+
 const CONFIG = {
   gcash_in: {
     title: "GCash In",
@@ -46,7 +54,7 @@ export function GcashServiceModal({ storeId, type, onClose }: GcashServiceModalP
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<FormValues>({
     mode: "onTouched",
     defaultValues: {
@@ -196,6 +204,11 @@ export function GcashServiceModal({ storeId, type, onClose }: GcashServiceModalP
                           if (!v || isNaN(n)) return "Amount is required.";
                           if (n < 1) return "Amount must be at least ₱1.";
                           return true;
+                        },
+                        onChange: (e) => {
+                          if (touchedFields.profit) return;
+                          const fee = suggestServiceFee(parseFloat(e.target.value));
+                          setValue("profit", fee > 0 ? String(fee) : "");
                         },
                       })}
                     />
