@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { TrendingUp, ShoppingCart, Zap, CreditCard, Wallet } from "lucide-react";
 import { useStoreDashboardStats } from "@/shared/queries/dashboard";
 import { useStoreRecentTransactions } from "@/shared/queries/dashboard";
@@ -14,11 +14,20 @@ const formatPeso = (amount: number) =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-const today = new Intl.DateTimeFormat("en-PH", {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
-}).format(new Date());
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDateLabel(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-PH", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(y, m - 1, d));
+}
 
 const TYPE_LABEL: Record<string, string> = {
   sale:       "Sale",
@@ -81,14 +90,26 @@ export default function StoreDashboardPage({
   params: Promise<{ id: string }>;
 }) {
   const { id: storeId } = use(params);
-  const { data: stats, isLoading: statsLoading } = useStoreDashboardStats(storeId);
-  const { data: recent = [], isLoading: txLoading } = useStoreRecentTransactions(storeId);
+  const [selectedDate, setSelectedDate] = useState(todayIso);
+
+  const { data: stats, isLoading: statsLoading } = useStoreDashboardStats(storeId, selectedDate);
+  const { data: recent = [], isLoading: txLoading } = useStoreRecentTransactions(storeId, selectedDate);
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Dashboard</h1>
-        <p className={styles.date}>{today}</p>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Dashboard</h1>
+          <p className={styles.date}>{formatDateLabel(selectedDate)}</p>
+        </div>
+        <input
+          type="date"
+          className={styles.datePicker}
+          value={selectedDate}
+          max={todayIso()}
+          onChange={(e) => e.target.value && setSelectedDate(e.target.value)}
+          aria-label="Select date"
+        />
       </div>
 
       {/* ── KPI ──────────────────────────────────────────────────── */}

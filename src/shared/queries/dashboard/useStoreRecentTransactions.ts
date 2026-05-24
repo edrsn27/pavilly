@@ -10,17 +10,24 @@ export interface StoreRecentTransaction {
   created_at: string;
 }
 
-export const useStoreRecentTransactions = (storeId: string) =>
+export const useStoreRecentTransactions = (storeId: string, date: string) =>
   useQuery({
-    queryKey: ["dashboard", "recent-transactions", storeId],
+    queryKey: ["dashboard", "recent-transactions", storeId, date],
     queryFn: async (): Promise<StoreRecentTransaction[]> => {
       const supabase = createBrowserSupabaseClient();
+
+      const [y, m, d] = date.split("-").map(Number);
+      const dayStart = new Date(y, m - 1, d, 0, 0, 0, 0);
+      const dayEnd = new Date(y, m - 1, d, 23, 59, 59, 999);
+
       const { data } = await supabase
         .from("transactions")
         .select("id, total, payment_method, status, transaction_type, created_at")
         .eq("store_id", storeId)
+        .gte("created_at", dayStart.toISOString())
+        .lte("created_at", dayEnd.toISOString())
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(50);
 
       return data ?? [];
     },

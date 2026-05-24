@@ -8,21 +8,23 @@ export interface StoreDashboardStats {
   todayGcashServices: number;
 }
 
-export const useStoreDashboardStats = (storeId: string) =>
+export const useStoreDashboardStats = (storeId: string, date: string) =>
   useQuery({
-    queryKey: ["dashboard", "stats", storeId],
+    queryKey: ["dashboard", "stats", storeId, date],
     queryFn: async (): Promise<StoreDashboardStats> => {
       const supabase = createBrowserSupabaseClient();
 
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
+      const [y, m, d] = date.split("-").map(Number);
+      const dayStart = new Date(y, m - 1, d, 0, 0, 0, 0);
+      const dayEnd = new Date(y, m - 1, d, 23, 59, 59, 999);
 
       const { data: txns } = await supabase
         .from("transactions")
         .select("total, transaction_type")
         .eq("store_id", storeId)
         .eq("status", "completed")
-        .gte("created_at", todayStart.toISOString());
+        .gte("created_at", dayStart.toISOString())
+        .lte("created_at", dayEnd.toISOString());
 
       const todaySales = (txns ?? [])
         .filter((t) => t.transaction_type === "sale")
@@ -34,7 +36,8 @@ export const useStoreDashboardStats = (storeId: string) =>
         .eq("store_id", storeId)
         .eq("status", "completed")
         .in("transaction_type", ["gcash_in", "gcash_out"])
-        .gte("created_at", todayStart.toISOString());
+        .gte("created_at", dayStart.toISOString())
+        .lte("created_at", dayEnd.toISOString());
 
       const gcashDetails = (gcashTxns ?? []).flatMap(
         (t: { gcash_transaction_details: { profit: number }[] }) =>
