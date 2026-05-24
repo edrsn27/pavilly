@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/shared/utils/supabase/server";
 import { routes } from "@/navigation/routes";
-
 export default async function StoreLayout({
   children,
   params,
