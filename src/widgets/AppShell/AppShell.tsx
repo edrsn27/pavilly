@@ -10,6 +10,7 @@ import {
   Tag,
   Warehouse,
   ReceiptText,
+  Wallet,
   MoreHorizontal,
   X,
 } from "lucide-react";
@@ -51,6 +52,11 @@ export function AppShell({ children }: AppShellProps) {
   const navItems = storeId
     ? [
         {
+          href: routes.store.dashboard(storeId),
+          label: "Dashboard",
+          Icon: LayoutDashboard,
+        },
+        {
           href: routes.store.pos(storeId),
           label: "POS Terminal",
           Icon: MonitorSmartphone,
@@ -74,6 +80,11 @@ export function AppShell({ children }: AppShellProps) {
           href: routes.store.transactions(storeId),
           label: "Transactions",
           Icon: ReceiptText,
+        },
+        {
+          href: routes.store.gcashAccounts(storeId),
+          label: "GCash Accounts",
+          Icon: Wallet,
         },
       ]
     : [{ href: routes.dashboard, label: "Dashboard", Icon: LayoutDashboard }];
@@ -114,6 +125,11 @@ export function AppShell({ children }: AppShellProps) {
           href: routes.store.transactions(storeId),
           label: "Transactions",
           Icon: ReceiptText,
+        },
+        {
+          href: routes.store.gcashAccounts(storeId),
+          label: "GCash Accounts",
+          Icon: Wallet,
         },
       ]
     : [];

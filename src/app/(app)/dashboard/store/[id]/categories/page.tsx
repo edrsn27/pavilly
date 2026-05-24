@@ -20,7 +20,7 @@ import {
   useDeleteCategory,
   type Category,
 } from "@/shared/queries/categories";
-import { CategoryModal } from "./CategoryModal";
+import { CategoryModal } from "@/features/categories";
 import styles from "./categories.module.css";
 
 const col = createColumnHelper<Category>();

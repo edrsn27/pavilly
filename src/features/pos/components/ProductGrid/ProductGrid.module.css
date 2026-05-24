@@ -137,6 +137,7 @@
   cursor: pointer;
   padding: 0;
   overflow: hidden;
+  min-height: 88px;
   box-shadow: var(--shadow-sm);
   transition: border-color var(--duration-fast), box-shadow var(--duration-fast), transform var(--duration-fast);
 }

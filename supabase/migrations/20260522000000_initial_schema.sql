@@ -333,7 +333,7 @@ begin
     select
       ti.product_id,
       ti.quantity,
-      new.status::text,
+      case new.status when 'voided' then 'void' else 'refund' end,
       new.id,
       new.cashier_id
     from public.transaction_items ti

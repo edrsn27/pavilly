@@ -8,6 +8,7 @@ import { ProductGrid } from "./components/ProductGrid/ProductGrid";
 import { Cart } from "./components/Cart/Cart";
 import { CheckoutPanel } from "./components/CheckoutPanel/CheckoutPanel";
 import { VariablePriceDialog } from "./components/VariablePriceDialog/VariablePriceDialog";
+import { GcashServiceModal, type GcashServiceType } from "./components/GcashServiceModal";
 import styles from "./PosTerminal.module.css";
 
 interface PosTerminalProps {
@@ -18,6 +19,7 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [view, setView] = useState<"products" | "cart" | "checkout">("products");
   const [pendingVariable, setPendingVariable] = useState<Product | null>(null);
+  const [gcashModal, setGcashModal] = useState<GcashServiceType | null>(null);
 
   const total = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -142,6 +144,8 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         onClear={clearCart}
         onClose={view === "cart" ? () => setView("products") : undefined}
         onCheckout={() => setView("checkout")}
+        onGcashIn={() => setGcashModal("gcash_in")}
+        onGcashOut={() => setGcashModal("gcash_out")}
       />
     );
 
@@ -179,6 +183,13 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         open={pendingVariable !== null}
         onConfirm={handleVariableConfirm}
         onClose={() => setPendingVariable(null)}
+      />
+
+      <GcashServiceModal
+        key={gcashModal ?? "closed"}
+        storeId={storeId}
+        type={gcashModal}
+        onClose={() => setGcashModal(null)}
       />
     </div>
   );

@@ -53,13 +53,12 @@ export function VariablePriceDialog({
   const isDisabled = !priceValue || Number(priceValue) <= 0;
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
+    <div className={styles.backdrop}>
       <div
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
         aria-labelledby="variable-price-title"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
           <h2 id="variable-price-title" className={styles.title}>

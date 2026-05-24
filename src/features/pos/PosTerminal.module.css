@@ -94,13 +94,25 @@
 }
 
 @media (min-width: 768px) {
+  /* Fix to viewport — bypasses the AppShell flex/padding chain entirely.
+     60px = AppShell header, 240px = AppShell sidebar. */
   .terminal {
+    position: fixed;
+    top: 60px;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    display: grid;
     grid-template-columns: 1fr 360px;
     grid-template-rows: 1fr;
+    overflow: hidden;
   }
 
   .productPane {
     padding: var(--space-5);
+    height: 100%;
+    overflow: hidden;
   }
 
   .sidebar {

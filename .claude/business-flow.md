@@ -70,6 +70,20 @@ After signing in, the app checks store context to redirect:
 - **Admin:** sees all stores across the platform.
 - **Cashier (member only):** redirected to POS — no dashboard access.
 
+## GCash service flow
+
+GCash In and GCash Out are recorded as transactions (`transaction_type = 'gcash_in'` or `'gcash_out'`), not as product sales. They have no `transaction_items` rows. Extra detail lives in `gcash_transaction_details`.
+
+| Type | What happens | Balance effect |
+|------|-------------|---------------|
+| `gcash_in` | Customer gives you cash → you load GCash to their number | `gcash_accounts.balance` increases by `amount` |
+| `gcash_out` | Customer sends GCash to you → you give them cash | `gcash_accounts.balance` decreases by `amount` |
+
+- **`profit`** is the service fee the cashier enters manually — it is separate from `amount`.
+- The balance update is handled by the `handle_gcash_detail_insert` DB trigger on `gcash_transaction_details` insert.
+- A store can have multiple GCash accounts (`gcash_accounts`). The cashier selects which account was used per transaction.
+- GCash transactions are initiated from the POS Cart footer via `GcashServiceModal` — not through the normal checkout flow.
+
 ## Admin flow
 
 - Global view: all users, all stores, all transactions, all reports.

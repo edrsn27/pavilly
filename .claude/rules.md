@@ -35,6 +35,27 @@
 ## Modals
 
 - Scrollable modal body pattern — the flex chain must be unbroken from the dialog down: `dialog (flex column, max-height: 90dvh)` → `form (flex column, flex: 1, min-height: 0)` → `body (flex: 1, min-height: 0, overflow-y: auto)`. Header and footer get `flex-shrink: 0`. Without `min-height: 0` on each flex ancestor, `overflow-y: auto` never activates.
+- **Reset modal state on open with `key`, not `useEffect`** — if a modal needs clean form/error state each time it opens, pass `key={discriminator}` at the call site so React remounts the component instead of resetting state inside an effect. Calling `setState` synchronously inside `useEffect` triggers the React Compiler cascading-render warning. Example: `<MyModal key={activeId ?? "closed"} ... />`.
+
+## Full-viewport layouts inside AppShell
+
+AppShell's `.content` area grows with its content — it does not have a constrained height. A page that needs to fill the full viewport (e.g. the POS terminal) cannot rely on `height: 100%` inside `.content`. Use `position: fixed` anchored to the shell's known dimensions instead:
+
+```css
+/* desktop — header 60px, sidebar 240px */
+@media (min-width: 768px) {
+  .terminal {
+    position: fixed;
+    top: 60px;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    height: auto; /* override any inherited height */
+  }
+}
+```
+
+This escapes the flex/padding chain entirely without touching AppShell or any other page.
 
 ## Components
 

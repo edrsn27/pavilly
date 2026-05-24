@@ -1,7 +1,7 @@
 "use client";
 
 import { use } from "react";
-import { TrendingUp, ShoppingCart, Zap, CreditCard } from "lucide-react";
+import { TrendingUp, ShoppingCart, Zap, CreditCard, Wallet } from "lucide-react";
 import { useStoreDashboardStats } from "@/shared/queries/dashboard";
 import { useStoreRecentTransactions } from "@/shared/queries/dashboard";
 import type { StoreRecentTransaction } from "@/shared/queries/dashboard";
@@ -114,6 +114,31 @@ export default function StoreDashboardPage({
               ? " "
               : `${stats?.todayTransactions ?? 0} ${
                   stats?.todayTransactions === 1 ? "transaction" : "transactions"
+                }`}
+          </p>
+        </div>
+
+        <div className={styles.kpiCard}>
+          <div className={styles.kpiTop}>
+            <span className={styles.kpiLabel}>GCash Profit Today</span>
+            <div className={styles.kpiIcon} aria-hidden="true">
+              <Wallet size={18} strokeWidth={2} />
+            </div>
+          </div>
+
+          {statsLoading ? (
+            <div className={styles.kpiSkeleton} aria-busy="true" />
+          ) : (
+            <p className={styles.kpiValue}>
+              {formatPeso(stats?.todayGcashProfit ?? 0)}
+            </p>
+          )}
+
+          <p className={styles.kpiSub}>
+            {statsLoading
+              ? " "
+              : `${stats?.todayGcashServices ?? 0} ${
+                  stats?.todayGcashServices === 1 ? "service" : "services"
                 }`}
           </p>
         </div>
