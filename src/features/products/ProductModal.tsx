@@ -1,23 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { useCategories } from "@/shared/queries/categories";
 import { useCreateProduct, useUpdateProduct } from "@/shared/queries/products";
 import type { Product } from "@/shared/queries/products";
+import { ProductForm } from "@/shared/components/ProductForm";
+import type { ProductFormValues } from "@/shared/components/ProductForm";
 import styles from "./ProductModal.module.css";
-
-interface ProductFields {
-  name: string;
-  description: string;
-  category_id: string;
-  price_type: "fixed" | "variable";
-  cost_price: string;
-  selling_price: string;
-  stock: string;
-  is_active: boolean;
-}
 
 interface ProductModalProps {
   open: boolean;
@@ -26,41 +15,12 @@ interface ProductModalProps {
   product?: Product;
 }
 
-const MARGIN = 0.20;
-
 export function ProductModal({ open, onClose, storeId, product }: ProductModalProps) {
   const isUpdate = !!product;
-  const { data: categories } = useCategories(storeId);
   const { mutate: createProduct, isPending: creating } = useCreateProduct();
   const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
   const isPending = creating || updating;
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    setValue,
-    setError,
-    formState: { errors, touchedFields },
-  } = useForm<ProductFields>({ mode: "onTouched" });
-
-  const priceType = watch("price_type");
-
-  useEffect(() => {
-    if (open) {
-      reset({
-        name: product?.name ?? "",
-        description: product?.description ?? "",
-        category_id: product?.category_id ?? "",
-        price_type: product?.price_type ?? "fixed",
-        cost_price: product?.cost_price != null ? String(product.cost_price) : "",
-        selling_price: product?.selling_price != null ? String(product.selling_price) : "",
-        stock: product?.inventory?.stock != null ? String(product.inventory.stock) : "0",
-        is_active: product?.is_active ?? true,
-      });
-    }
-  }, [open, product, reset]);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -73,7 +33,21 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
 
   if (!open) return null;
 
-  const onSubmit = (data: ProductFields) => {
+  const defaultValues: Partial<ProductFormValues> = {
+    name: product?.name ?? "",
+    description: product?.description ?? "",
+    barcode: product?.barcode ?? "",
+    category_id: product?.category_id ?? "",
+    price_type: product?.price_type ?? "fixed",
+    cost_price: product?.cost_price != null ? String(product.cost_price) : "",
+    selling_price: product?.selling_price != null ? String(product.selling_price) : "",
+    stock: product?.inventory?.stock != null ? String(product.inventory.stock) : "0",
+    is_active: product?.is_active ?? true,
+  };
+
+  const handleSubmit = (data: ProductFormValues) => {
+    setServerError(null);
+
     const stock =
       data.price_type === "fixed" && data.stock !== ""
         ? Math.max(0, parseInt(data.stock, 10) || 0)
@@ -82,6 +56,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
     const payload = {
       name: data.name.trim(),
       description: data.description.trim() || undefined,
+      barcode: data.barcode.trim() || undefined,
       category_id: data.category_id || undefined,
       price_type: data.price_type,
       cost_price: data.cost_price ? parseFloat(data.cost_price) : undefined,
@@ -98,9 +73,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
         {
           onSuccess: onClose,
           onError: (err) =>
-            setError("root", {
-              message: err instanceof Error ? err.message : "Failed to update product.",
-            }),
+            setServerError(err instanceof Error ? err.message : "Failed to update product."),
         }
       );
     } else {
@@ -109,9 +82,7 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
         {
           onSuccess: onClose,
           onError: (err) =>
-            setError("root", {
-              message: err instanceof Error ? err.message : "Failed to create product.",
-            }),
+            setServerError(err instanceof Error ? err.message : "Failed to create product."),
         }
       );
     }
@@ -125,7 +96,6 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
         aria-modal="true"
         aria-labelledby="product-modal-title"
       >
-        {/* Header */}
         <div className={styles.header}>
           <h2 id="product-modal-title" className={styles.title}>
             {isUpdate ? "Edit product" : "Add product"}
@@ -140,228 +110,17 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
           </button>
         </div>
 
-        {/* Form */}
-        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className={styles.body}>
-
-            {errors.root && (
-              <div className={styles.errorBanner} role="alert">
-                {errors.root.message}
-              </div>
-            )}
-
-            {/* Name */}
-            <div className={styles.field}>
-              <label htmlFor="product-name" className={styles.label}>
-                Product name <span className={styles.required} aria-hidden="true">*</span>
-              </label>
-              <input
-                id="product-name"
-                type="text"
-                autoFocus
-                placeholder="e.g. Coca-Cola 1.5L"
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "product-name-error" : undefined}
-                className={`${styles.input}${errors.name ? ` ${styles.inputError}` : ""}`}
-                {...register("name", { required: "Product name is required." })}
-              />
-              {errors.name && (
-                <span id="product-name-error" className={styles.fieldError} role="alert">
-                  {errors.name.message}
-                </span>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className={styles.field}>
-              <label htmlFor="product-desc" className={styles.label}>
-                Description <span className={styles.labelHint}>(optional)</span>
-              </label>
-              <textarea
-                id="product-desc"
-                rows={2}
-                placeholder="Short description…"
-                className={styles.textarea}
-                {...register("description")}
-              />
-            </div>
-
-            {/* Category */}
-            <div className={styles.field}>
-              <label htmlFor="product-category" className={styles.label}>
-                Category <span className={styles.labelHint}>(optional)</span>
-              </label>
-              <select
-                id="product-category"
-                className={styles.select}
-                {...register("category_id")}
-              >
-                <option value="">No category</option>
-                {categories?.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Price type */}
-            <div className={styles.field}>
-              <span className={styles.label}>Price type</span>
-              <div className={styles.radioGroup}>
-                <label className={styles.radioLabel}>
-                  <input
-                    type="radio"
-                    value="fixed"
-                    className={styles.radioInput}
-                    {...register("price_type")}
-                  />
-                  <span className={styles.radioText}>
-                    <strong>Fixed</strong>
-                    <span className={styles.radioHint}>Set selling price per unit</span>
-                  </span>
-                </label>
-                <label className={styles.radioLabel}>
-                  <input
-                    type="radio"
-                    value="variable"
-                    className={styles.radioInput}
-                    {...register("price_type")}
-                  />
-                  <span className={styles.radioText}>
-                    <strong>Variable</strong>
-                    <span className={styles.radioHint}>Cashier enters price at POS</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* Prices */}
-            <div className={styles.priceRow}>
-              <div className={styles.field}>
-                <label htmlFor="product-cost" className={styles.label}>
-                  Cost price <span className={styles.labelHint}>(optional)</span>
-                </label>
-                <div className={styles.inputPrefix}>
-                  <span className={styles.prefix}>₱</span>
-                  <input
-                    id="product-cost"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    className={styles.inputWithPrefix}
-                    {...register("cost_price", {
-                      min: { value: 0, message: "Must be ≥ 0" },
-                      onChange: (e) => {
-                        if (touchedFields.selling_price) return;
-                        const cost = parseFloat(e.target.value);
-                        if (!isNaN(cost) && cost > 0) {
-                          setValue("selling_price", (cost / (1 - MARGIN)).toFixed(2));
-                        }
-                      },
-                    })}
-                  />
-                </div>
-                {errors.cost_price && (
-                  <span className={styles.fieldError} role="alert">
-                    {errors.cost_price.message}
-                  </span>
-                )}
-              </div>
-
-              {priceType === "fixed" && (
-                <div className={styles.field}>
-                  <label htmlFor="product-price" className={styles.label}>
-                    Selling price <span className={styles.required} aria-hidden="true">*</span>
-                  </label>
-                  <div className={styles.inputPrefix}>
-                    <span className={styles.prefix}>₱</span>
-                    <input
-                      id="product-price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      aria-invalid={!!errors.selling_price}
-                      className={`${styles.inputWithPrefix}${errors.selling_price ? ` ${styles.inputError}` : ""}`}
-                      {...register("selling_price", {
-                        required:
-                          priceType === "fixed"
-                            ? "Selling price is required for fixed products."
-                            : false,
-                        min: { value: 0, message: "Must be ≥ 0" },
-                        onChange: (e) => {
-                          if (touchedFields.cost_price) return;
-                          const selling = parseFloat(e.target.value);
-                          if (!isNaN(selling) && selling > 0) {
-                            setValue("cost_price", (selling * (1 - MARGIN)).toFixed(2));
-                          }
-                        },
-                      })}
-                    />
-                  </div>
-                  {errors.selling_price && (
-                    <span className={styles.fieldError} role="alert">
-                      {errors.selling_price.message}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Stock (fixed products only) */}
-            {priceType === "fixed" && (
-              <div className={styles.field}>
-                <label htmlFor="product-stock" className={styles.label}>
-                  Stock <span className={styles.labelHint}>(units on hand)</span>
-                </label>
-                <input
-                  id="product-stock"
-                  type="number"
-                  min="0"
-                  step="1"
-                  placeholder="0"
-                  aria-invalid={!!errors.stock}
-                  aria-describedby={errors.stock ? "product-stock-error" : undefined}
-                  className={`${styles.input}${errors.stock ? ` ${styles.inputError}` : ""}`}
-                  {...register("stock", {
-                    min: { value: 0, message: "Stock must be ≥ 0" },
-                    pattern: { value: /^\d*$/, message: "Whole numbers only" },
-                  })}
-                />
-                {errors.stock && (
-                  <span id="product-stock-error" className={styles.fieldError} role="alert">
-                    {errors.stock.message}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Active toggle (edit only) */}
-            {isUpdate && (
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  className={styles.checkbox}
-                  {...register("is_active")}
-                />
-                <span className={styles.checkboxText}>Active (visible in POS)</span>
-              </label>
-            )}
-
-          </div>
-
-          {/* Footer */}
-          <div className={styles.footer}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className={styles.submitBtn} disabled={isPending}>
-              {isPending
-                ? isUpdate ? "Saving…" : "Adding…"
-                : isUpdate ? "Save changes" : "Add product"}
-            </button>
-          </div>
-        </form>
+        <ProductForm
+          key={isUpdate ? product.id : "create"}
+          storeId={storeId}
+          defaultValues={defaultValues}
+          onSubmit={handleSubmit}
+          onCancel={onClose}
+          isPending={isPending}
+          serverError={serverError}
+          submitLabel={isUpdate ? "Save changes" : "Add product"}
+          showIsActive={isUpdate}
+        />
       </div>
     </div>
   );

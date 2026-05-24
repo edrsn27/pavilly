@@ -12,7 +12,7 @@ interface VariablePriceDialogProps {
 }
 
 interface FormValues {
-  price: number;
+  price: number | undefined;
 }
 
 export function VariablePriceDialog({
@@ -27,12 +27,12 @@ export function VariablePriceDialog({
     watch,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({ mode: "onTouched", defaultValues: { price: 0 } });
+  } = useForm<FormValues>({ mode: "onTouched" });
 
   const priceValue = watch("price");
 
   useEffect(() => {
-    if (open) reset({ price: 0 });
+    if (open) reset({});
   }, [open, reset]);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function VariablePriceDialog({
   if (!open) return null;
 
   const onSubmit = (values: FormValues) => {
-    onConfirm(values.price);
+    onConfirm(values.price!);
   };
 
   const isDisabled = !priceValue || Number(priceValue) <= 0;

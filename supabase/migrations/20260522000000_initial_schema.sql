@@ -74,6 +74,7 @@ create table public.products (
   category_id   uuid           references public.categories(id) on delete set null,
   name          text           not null,
   description   text,
+  barcode       text,
   price_type    text           not null default 'fixed'
                                check (price_type in ('fixed', 'variable')),
   cost_price    numeric(10,2)  check (cost_price >= 0),
@@ -142,7 +143,7 @@ create table public.gcash_transaction_details (
   id                uuid           primary key default gen_random_uuid(),
   transaction_id    uuid           not null unique references public.transactions(id) on delete cascade,
   gcash_account_id  uuid           not null references public.gcash_accounts(id),
-  customer_number   text           not null,
+  customer_number   text,
   reference_number  text,
   amount            numeric(10,2)  not null,
   profit            numeric(10,2)  not null default 0
@@ -250,8 +251,6 @@ create trigger set_updated_at before update on public.gcash_accounts
 
 -- ── on_auth_user_created ─────────────────────────────────────────────────
 -- Creates a public.users row whenever someone registers via Supabase Auth.
--- Role defaults to 'vendor' — cashiers get their role updated when they
--- consume an invite link.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -312,15 +311,51 @@ create trigger on_transaction_item_insert
   for each row execute function public.handle_transaction_item_insert();
 
 
+-- ── on_gcash_detail_insert ───────────────────────────────────────────────
+-- Updates gcash_accounts.balance when a GCash service transaction is recorded.
+-- gcash_in  → customer gives cash, store loads GCash → balance +amount
+-- gcash_out → customer sends GCash, store gives cash → balance -amount
+create or replace function public.handle_gcash_detail_insert()
+returns trigger
+language plpgsql
+as $$
+declare
+  v_type text;
+begin
+  select transaction_type into v_type
+  from public.transactions
+  where id = new.transaction_id;
+
+  if v_type = 'gcash_in' then
+    update public.gcash_accounts
+    set balance = balance + new.amount, updated_at = now()
+    where id = new.gcash_account_id;
+  elsif v_type = 'gcash_out' then
+    update public.gcash_accounts
+    set balance = balance - new.amount, updated_at = now()
+    where id = new.gcash_account_id;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger on_gcash_detail_insert
+  after insert on public.gcash_transaction_details
+  for each row execute function public.handle_gcash_detail_insert();
+
+
 -- ── on_transaction_voided_or_refunded ────────────────────────────────────
--- Restores inventory stock when a transaction is voided or refunded.
--- Logs each restored item in inventory_logs.
+-- Restores inventory stock and reverses GCash balance when a transaction
+-- is voided or refunded. Logs each restored item in inventory_logs.
 create or replace function public.handle_transaction_status_change()
 returns trigger
 language plpgsql
 as $$
 begin
   if new.status in ('voided', 'refunded') and old.status = 'completed' then
+
+    -- Restore inventory for fixed-price sale items
     update public.inventory i
     set stock = i.stock + ti.quantity
     from public.transaction_items ti
@@ -340,6 +375,21 @@ begin
     join public.products p on p.id = ti.product_id
     where ti.transaction_id = new.id
       and p.price_type = 'fixed';
+
+    -- Reverse GCash balance for gcash_in / gcash_out transactions
+    if new.transaction_type in ('gcash_in', 'gcash_out') then
+      update public.gcash_accounts ga
+      set
+        balance = case new.transaction_type
+          when 'gcash_in'  then ga.balance - gtd.amount  -- undo the +amount
+          when 'gcash_out' then ga.balance + gtd.amount  -- undo the -amount
+        end,
+        updated_at = now()
+      from public.gcash_transaction_details gtd
+      where gtd.transaction_id = new.id
+        and ga.id = gtd.gcash_account_id;
+    end if;
+
   end if;
   return new;
 end;

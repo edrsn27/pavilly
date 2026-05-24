@@ -7,6 +7,7 @@ export interface CreateProductParams {
   store_id: string;
   name: string;
   description?: string;
+  barcode?: string;
   category_id?: string;
   price_type: "fixed" | "variable";
   cost_price?: number;
