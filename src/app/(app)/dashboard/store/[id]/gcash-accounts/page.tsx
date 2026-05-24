@@ -10,14 +10,15 @@ import {
   type ColumnPinningState,
   type Column,
 } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
-import { useGcashAccountsAll, type GcashAccountFull } from "@/shared/queries/gcash";
+import { Pencil, Trash2 } from "lucide-react";
+import { useGcashAccountsAll, useDeleteGcashAccount, type GcashAccountFull } from "@/shared/queries/gcash";
 import { GcashAccountModal } from "@/features/gcash-accounts";
+import { TextTruncate } from "@/shared/components/TextTruncate";
 import styles from "./page.module.css";
 
 const col = createColumnHelper<GcashAccountFull>();
 
-const PINNED: ColumnPinningState = { left: ["name"], right: ["actions"] };
+const PINNED: ColumnPinningState = { left: ["name"] };
 
 const pinStyle = (column: Column<GcashAccountFull>): React.CSSProperties => {
   const side = column.getIsPinned();
@@ -41,6 +42,7 @@ const formatPeso = (amount: number) =>
 export default function GcashAccountsPage() {
   const { id: storeId } = useParams<{ id: string }>();
   const { data: accounts = [] } = useGcashAccountsAll(storeId);
+  const { mutate: deleteAccount } = useDeleteGcashAccount();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<GcashAccountFull | null>(null);
@@ -55,6 +57,10 @@ export default function GcashAccountsPage() {
     setModalOpen(true);
   }, []);
 
+  const handleDelete = useCallback((account: GcashAccountFull) => {
+    deleteAccount({ id: account.id, storeId });
+  }, [deleteAccount, storeId]);
+
   const closeModal = useCallback(() => {
     setModalOpen(false);
     setEditing(null);
@@ -65,14 +71,18 @@ export default function GcashAccountsPage() {
       col.accessor("name", {
         id: "name",
         header: "Label",
-        size: 180,
-        cell: (info) => <span className={styles.accountName}>{info.getValue()}</span>,
+        size: 100,
+        cell: (info) => (
+          <TextTruncate text={info.getValue()} className={`${styles.accountName} ${styles.truncate}`} />
+        ),
       }),
       col.accessor("number", {
         id: "number",
         header: "Number",
         size: 150,
-        cell: (info) => <span className={styles.numeric}>{info.getValue()}</span>,
+        cell: (info) => (
+          <TextTruncate text={info.getValue()} className={`${styles.numeric} ${styles.truncate}`} />
+        ),
       }),
       col.accessor("balance", {
         id: "balance",
@@ -97,20 +107,30 @@ export default function GcashAccountsPage() {
       col.display({
         id: "actions",
         header: "",
-        size: 56,
+        size: 96,
         cell: ({ row }) => (
-          <button
-            type="button"
-            className={styles.editBtn}
-            aria-label={`Edit ${row.original.name}`}
-            onClick={() => openEdit(row.original)}
-          >
-            <Pencil size={14} aria-hidden="true" />
-          </button>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              aria-label={`Edit ${row.original.name}`}
+              onClick={() => openEdit(row.original)}
+            >
+              <Pencil size={14} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+              aria-label={`Delete ${row.original.name}`}
+              onClick={() => handleDelete(row.original)}
+            >
+              <Trash2 size={14} aria-hidden="true" />
+            </button>
+          </div>
         ),
       }),
     ],
-    [openEdit]
+    [openEdit, handleDelete]
   );
 
   const table = useReactTable({

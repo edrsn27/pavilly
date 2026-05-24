@@ -63,7 +63,7 @@
 
 .table {
   width: 100%;
-  min-width: 606px;
+  min-width: 566px;
   table-layout: fixed;
   border-collapse: collapse;
 }
@@ -84,10 +84,15 @@
 
 .td {
   padding: var(--space-2) var(--space-3);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border-subtle);
   background: var(--color-surface);
+  overflow: hidden;
+}
+
+.truncate {
+  max-width: 100%;
 }
 
 .row:last-child .td { border-bottom: none; }
@@ -96,7 +101,7 @@
 .rowInactive .td { opacity: 0.5; }
 
 .accountName {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .numeric {
@@ -126,7 +131,13 @@
   border: 1px solid var(--color-border-subtle);
 }
 
-.editBtn {
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.actionBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,14 +151,23 @@
   transition: color var(--duration-fast), background var(--duration-fast);
 }
 
-.editBtn:hover {
+.actionBtn:hover {
   color: var(--color-primary);
   background: var(--color-primary-light);
 }
 
-.editBtn:focus-visible {
+.actionBtn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgb(13 148 136 / .3);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .actionBtn:active { transform: scale(0.97); }
+}
+
+.actionBtnDelete:hover {
+  color: #b91c1c;
+  background: #fee2e2;
 }
 
 .empty {
