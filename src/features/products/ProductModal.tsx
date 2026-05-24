@@ -26,6 +26,8 @@ interface ProductModalProps {
   product?: Product;
 }
 
+const MARGIN = 0.20;
+
 export function ProductModal({ open, onClose, storeId, product }: ProductModalProps) {
   const isUpdate = !!product;
   const { data: categories } = useCategories(storeId);
@@ -38,8 +40,9 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
     handleSubmit,
     reset,
     watch,
+    setValue,
     setError,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<ProductFields>({ mode: "onTouched" });
 
   const priceType = watch("price_type");
@@ -248,6 +251,13 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
                     className={styles.inputWithPrefix}
                     {...register("cost_price", {
                       min: { value: 0, message: "Must be ≥ 0" },
+                      onChange: (e) => {
+                        if (touchedFields.selling_price) return;
+                        const cost = parseFloat(e.target.value);
+                        if (!isNaN(cost) && cost > 0) {
+                          setValue("selling_price", (cost / (1 - MARGIN)).toFixed(2));
+                        }
+                      },
                     })}
                   />
                 </div>
@@ -279,6 +289,13 @@ export function ProductModal({ open, onClose, storeId, product }: ProductModalPr
                             ? "Selling price is required for fixed products."
                             : false,
                         min: { value: 0, message: "Must be ≥ 0" },
+                        onChange: (e) => {
+                          if (touchedFields.cost_price) return;
+                          const selling = parseFloat(e.target.value);
+                          if (!isNaN(selling) && selling > 0) {
+                            setValue("cost_price", (selling * (1 - MARGIN)).toFixed(2));
+                          }
+                        },
                       })}
                     />
                   </div>
