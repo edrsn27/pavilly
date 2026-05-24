@@ -8,6 +8,7 @@ export interface UpdateProductParams {
   store_id: string;
   name: string;
   description?: string;
+  barcode?: string | null;
   category_id?: string | null;
   price_type: "fixed" | "variable";
   cost_price?: number | null;

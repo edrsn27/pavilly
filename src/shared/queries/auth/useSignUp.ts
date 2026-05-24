@@ -27,6 +27,7 @@ export const useSignUp = () =>
         password,
         options: {
           data: { full_name: `${firstName} ${lastName}`.trim() },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 

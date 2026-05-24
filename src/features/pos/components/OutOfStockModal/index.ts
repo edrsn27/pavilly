@@ -1,0 +1,1 @@
+export { OutOfStockModal } from "./OutOfStockModal";

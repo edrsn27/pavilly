@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Camera } from "lucide-react";
 import type { Product } from "@/shared/queries/products";
 import type { CartItem } from "./PosTerminal.types";
 import { ProductGrid } from "./components/ProductGrid/ProductGrid";
 import { Cart } from "./components/Cart/Cart";
 import { CheckoutPanel } from "./components/CheckoutPanel/CheckoutPanel";
 import { VariablePriceDialog } from "./components/VariablePriceDialog/VariablePriceDialog";
+import { ScannerView } from "./components/ScannerView";
+import { OutOfStockModal } from "./components/OutOfStockModal";
 import styles from "./PosTerminal.module.css";
 
 interface PosTerminalProps {
@@ -16,8 +18,9 @@ interface PosTerminalProps {
 
 export function PosTerminal({ storeId }: PosTerminalProps) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [view, setView] = useState<"products" | "cart" | "checkout">("products");
+  const [view, setView] = useState<"products" | "cart" | "checkout" | "scanner">("products");
   const [pendingVariable, setPendingVariable] = useState<Product | null>(null);
+  const [outOfStock, setOutOfStock] = useState<Product | null>(null);
   const total = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -28,7 +31,10 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
     }
 
     const stock = product.inventory?.stock ?? 0;
-    if (stock === 0) return;
+    if (stock === 0) {
+      setOutOfStock(product);
+      return;
+    }
 
     const unitPrice = product.selling_price ?? 0;
     setItems((prev) => {
@@ -114,6 +120,34 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
     );
   };
 
+  const pushItem = (product: Product) => {
+    const unitPrice = product.selling_price ?? 0;
+    setItems((prev) => {
+      const existing = prev.find(
+        (item) =>
+          item.productId === product.id &&
+          item.priceType === "fixed" &&
+          item.unitPrice === unitPrice
+      );
+      if (existing) {
+        return prev.map((item) =>
+          item === existing ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [
+        ...prev,
+        {
+          productId: product.id,
+          productName: product.name,
+          priceType: "fixed",
+          unitPrice,
+          costPrice: product.cost_price,
+          quantity: 1,
+        },
+      ];
+    });
+  };
+
   const clearCart = () => {
     setItems([]);
     setView("products");
@@ -132,6 +166,18 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         total={total}
         onBack={() => setView("cart")}
         onSuccess={handleSuccess}
+      />
+    ) : view === "scanner" ? (
+      <ScannerView
+        storeId={storeId}
+        items={items}
+        total={total}
+        onBack={() => setView("products")}
+        onAddToCart={addProduct}
+        onUpdateQty={updateQty}
+        onRemove={removeItem}
+        onClear={clearCart}
+        onCheckout={() => setView("checkout")}
       />
     ) : (
       <Cart
@@ -153,7 +199,7 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         />
       </div>
 
-      <div className={`${styles.sidebar}${view === "cart" || view === "checkout" ? ` ${styles.sidebarOpen}` : ""}`}>
+      <div className={`${styles.sidebar}${view === "cart" || view === "checkout" || view === "scanner" ? ` ${styles.sidebarOpen}` : ""}`}>
         {sidebarContent}
       </div>
 
@@ -173,12 +219,37 @@ export function PosTerminal({ storeId }: PosTerminalProps) {
         </button>
       )}
 
+      {/* Camera FAB — mobile only, shown on product view */}
+      {view === "products" && (
+        <button
+          className={styles.cameraFab}
+          onClick={() => setView("scanner")}
+          aria-label="Scan barcode"
+        >
+          <Camera size={22} aria-hidden="true" />
+        </button>
+      )}
+
       <VariablePriceDialog
         productName={pendingVariable?.name ?? ""}
         open={pendingVariable !== null}
         onConfirm={handleVariableConfirm}
         onClose={() => setPendingVariable(null)}
       />
+
+      {outOfStock && (
+        <OutOfStockModal
+          key={outOfStock.id}
+          product={outOfStock}
+          storeId={storeId}
+          onSuccess={() => {
+            const product = outOfStock;
+            setOutOfStock(null);
+            pushItem(product);
+          }}
+          onClose={() => setOutOfStock(null)}
+        />
+      )}
 
     </div>
   );

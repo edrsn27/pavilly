@@ -7,13 +7,14 @@ export interface Product {
   category_id: string | null;
   name: string;
   description: string | null;
+  barcode: string | null;
   price_type: "fixed" | "variable";
   cost_price: number | null;
   selling_price: number | null;
   image_url: string | null;
   is_active: boolean;
   created_at: string;
-  inventory: { stock: number; low_stock_threshold: number } | null;
+  inventory: { id: string; stock: number; low_stock_threshold: number } | null;
 }
 
 export const productsQueryKey = (storeId: string) =>
@@ -27,7 +28,7 @@ export const useProducts = (storeId: string) =>
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id, store_id, category_id, name, description, price_type, cost_price, selling_price, image_url, is_active, created_at, inventory(stock, low_stock_threshold)"
+          "id, store_id, category_id, name, description, barcode, price_type, cost_price, selling_price, image_url, is_active, created_at, inventory(id, stock, low_stock_threshold)"
         )
         .eq("store_id", storeId)
         .order("created_at", { ascending: false });
